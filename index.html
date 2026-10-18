@@ -2,599 +2,597 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Astronaut Health Guardian</title>
+
 <style>
-:root {
-  --bg: #071426;
-  --panel: #10233c;
-  --panel2: #091a2e;
-  --line: #294968;
-  --text: #f2f7ff;
-  --muted: #bfd0e4;
-  --accent: #55d5ff;
+* {
+    box-sizing: border-box;
 }
-* { box-sizing: border-box; }
+
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  line-height: 1.5;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #06101f;
+    color: #eaf4ff;
 }
+
 header {
-  padding: 28px 16px;
-  text-align: center;
-  background: linear-gradient(135deg,#123b67,#09172b);
-  border-bottom: 2px solid var(--accent);
+    text-align: center;
+    padding: 30px 15px;
+    background: linear-gradient(135deg, #102b50, #07111f);
+    border-bottom: 2px solid #42d9ff;
 }
-header h1 { margin: 0 0 6px; color: var(--accent); }
-header p { margin: 0; color: #d3e7ff; }
-main { width: min(1100px,94%); margin: 24px auto; }
+
+header h1 {
+    color: #62e5ff;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #b8cce5;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
 .card {
-  background: var(--panel);
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  margin-bottom: 20px;
+    background: #10223a;
+    border: 1px solid #294563;
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 5px 20px #0004;
 }
-h2 { margin-top: 0; color: var(--accent); }
-h3 { margin-bottom: 8px; }
+
+h2 {
+    color: #62e5ff;
+    margin-top: 0;
+}
+
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
 }
-label { display: block; font-weight: bold; margin-bottom: 6px; }
-input,select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #55718f;
-  border-radius: 8px;
-  background: var(--panel2);
-  color: var(--text);
-  font-size: 16px;
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    color: #d9eaff;
 }
+
+input, select {
+    width: 100%;
+    padding: 11px;
+    border-radius: 7px;
+    border: 1px solid #426080;
+    background: #071629;
+    color: white;
+    margin-bottom: 15px;
+}
+
 button {
-  border: 0;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 12px 8px 0 0;
-  background: var(--accent);
-  color: #071426;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 5px 5px 5px 0;
+    cursor: pointer;
+    font-weight: bold;
+    background: #48d7f5;
+    color: #06101f;
 }
-button.secondary { background: #d7e5f5; }
-button:disabled { opacity: .45; cursor: not-allowed; }
-.small { font-size: 13px; color: var(--muted); }
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(155px,1fr));
-  gap: 12px;
+
+button:hover {
+    background: #9aeeff;
 }
-.tile {
-  background: var(--panel2);
-  border: 1px solid var(--line);
-  padding: 14px;
-  border-radius: 10px;
-  overflow-wrap: anywhere;
+
+.secondary {
+    background: #294563;
+    color: white;
 }
-.tile strong { display: block; font-size: 21px; margin-top: 4px; }
-.notice {
-  padding: 14px;
-  border-radius: 9px;
-  background: #183653;
-  white-space: pre-line;
+
+.result {
+    border-left: 5px solid #48d7f5;
+    background: #091a2d;
+    padding: 14px;
+    border-radius: 8px;
+    margin: 12px 0;
 }
-.flag {
-  padding: 12px;
-  margin: 10px 0;
-  border-left: 5px solid #e7bd52;
-  background: #2b2a24;
-  border-radius: 7px;
+
+.high {
+    border-left-color: #ff5757;
 }
-.flag.high { border-color: #ff6b6b; background: #351f29; }
-.flag.info { border-color: #55d5ff; background: #132b40; }
+
+.review {
+    border-left-color: #ffbf47;
+}
+
+.normal {
+    border-left-color: #54e6a0;
+}
+
+.result h3 {
+    margin-top: 0;
+}
+
+.small {
+    color: #b9cce1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
 canvas {
-  display: block;
-  width: 100%;
-  height: 320px;
-  background: var(--panel2);
-  border-radius: 10px;
-  border: 1px solid var(--line);
+    width: 100%;
+    background: #071629;
+    border-radius: 8px;
+    display: block;
 }
-footer { text-align: center; padding: 20px; color: var(--muted); }
-@media(max-width:520px) {
-  .card { padding: 16px; }
-  header h1 { font-size: 24px; }
-  button { width: 100%; margin-right: 0; }
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #9bb1ca;
+    font-size: 13px;
+}
+
+.hidden {
+    display: none;
 }
 </style>
 </head>
+
 <body>
 
 <header>
-  <h1>🚀 Astronaut Health Guardian</h1>
-  <p>Current-input health screening · Educational prototype</p>
+    <h1>🧑‍🚀 Astronaut Health Guardian</h1>
+    <p>Space Mission Health Monitoring and Analysis System</p>
+    <p>Educational prototype | Browser-based demonstration</p>
 </header>
 
-<main>
+<main class="container">
+
 <section class="card">
-<h2>Enter Current Measurements</h2>
+    <h2>📊 Enter Health Readings</h2>
 
-<form id="healthForm">
-<div class="grid">
+    <form id="healthForm">
 
-<div>
-<label for="heartRate">Heart rate (BPM)</label>
-<input id="heartRate" type="number" min="1" max="250" required placeholder="e.g. 75">
-</div>
+    <div class="grid">
 
-<div>
-<label for="spo2">SpO₂ (%)</label>
-<input id="spo2" type="number" min="1" max="100" step=".1" required placeholder="e.g. 98">
-</div>
+        <div>
+            <label for="heart">Heart Rate (BPM)</label>
+            <input id="heart" type="number" min="20" max="250"
+                   value="75" required>
+        </div>
 
-<div>
-<label for="temperature">Body temperature (°C)</label>
-<input id="temperature" type="number" min="25" max="45" step=".1" required placeholder="e.g. 36.8">
-</div>
+        <div>
+            <label for="oxygen">Oxygen Saturation (%)</label>
+            <input id="oxygen" type="number" min="50" max="100"
+                   value="98" required>
+        </div>
 
-<div>
-<label for="systolic">Systolic blood pressure (mmHg)</label>
-<input id="systolic" type="number" min="50" max="260" required placeholder="e.g. 115">
-</div>
+        <div>
+            <label for="temperature">Body Temperature (°C)</label>
+            <input id="temperature" type="number" min="25" max="45"
+                   step="0.1" value="36.8" required>
+        </div>
 
-<div>
-<label for="diastolic">Diastolic blood pressure (mmHg)</label>
-<input id="diastolic" type="number" min="30" max="160" required placeholder="e.g. 75">
-</div>
+        <div>
+            <label for="systolic">Systolic Blood Pressure</label>
+            <input id="systolic" type="number" min="50" max="280"
+                   value="115" required>
+        </div>
 
-<div>
-<label for="hrv">HRV (ms, optional)</label>
-<input id="hrv" type="number" min="1" max="300" step=".1" placeholder="Leave blank if unknown">
-</div>
+        <div>
+            <label for="diastolic">Diastolic Blood Pressure</label>
+            <input id="diastolic" type="number" min="30" max="180"
+                   value="75" required>
+        </div>
 
-<div>
-<label for="sleep">Sleep last night (hours)</label>
-<input id="sleep" type="number" min="0" max="24" step=".1" required placeholder="e.g. 8">
-</div>
+        <div>
+            <label for="sleep">Sleep Duration (hours)</label>
+            <input id="sleep" type="number" min="0" max="24"
+                   step="0.5" value="8" required>
+        </div>
 
-<div>
-<label for="fatigue">Fatigue (0–10)</label>
-<input id="fatigue" type="number" min="0" max="10" required placeholder="0 = none, 10 = extreme">
-</div>
+        <div>
+            <label for="fatigue">Fatigue Level (0–10)</label>
+            <input id="fatigue" type="number" min="0" max="10"
+                   value="2" required>
+        </div>
 
-<div>
-<label for="stress">Stress (0–10)</label>
-<input id="stress" type="number" min="0" max="10" required placeholder="0 = none, 10 = extreme">
-</div>
+        <div>
+            <label for="stress">Stress Level (0–10)</label>
+            <input id="stress" type="number" min="0" max="10"
+                   value="2" required>
+        </div>
 
-<div>
-<label for="exercise">Exercise today (minutes)</label>
-<input id="exercise" type="number" min="0" max="1440" required placeholder="e.g. 30">
-</div>
+        <div>
+            <label for="hydration">Hydration Self-Assessment</label>
+            <select id="hydration">
+                <option value="adequate">No current hydration concern</option>
+                <option value="low">Possible dehydration concern</option>
+                <option value="unknown">Unsure</option>
+            </select>
+        </div>
 
-<div>
-<label for="intensity">Exercise intensity</label>
-<select id="intensity">
-<option value="rest">Rest / no exercise</option>
-<option value="light">Light</option>
-<option value="moderate">Moderate</option>
-<option value="vigorous">Vigorous</option>
-</select>
-</div>
+        <div>
+            <label for="dizziness">Dizziness</label>
+            <select id="dizziness">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
 
-<div>
-<label for="hydration">Hydration self-check</label>
-<select id="hydration">
-<option value="unknown">Not sure</option>
-<option value="good">Seems adequate</option>
-<option value="low">Possibly low / thirsty</option>
-</select>
-</div>
+        <div>
+            <label for="headache">Headache</label>
+            <select id="headache">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
 
-<div>
-<label for="dizziness">Dizziness / faint feeling?</label>
-<select id="dizziness">
-<option value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
+        <div>
+            <label for="breathing">Breathing Difficulty or Chest Discomfort</label>
+            <select id="breathing">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
 
-<div>
-<label for="headache">Headache?</label>
-<select id="headache">
-<option value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
+    </div>
 
-<div>
-<label for="nausea">Nausea?</label>
-<select id="nausea">
-<option value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
+    <button type="submit">🧠 Analyse Health</button>
+    <button type="reset" class="secondary">Reset Form</button>
 
-<div>
-<label for="breath">Shortness of breath or chest discomfort?</label>
-<select id="breath">
-<option value="no">No</option>
-<option value="yes">Yes</option>
-</select>
-</div>
-
-</div>
-
-<button type="submit">Analyse Current Data</button>
-<button class="secondary" type="reset">Clear</button>
-
-<p class="small">
-Use fictional test values only. This website processes inputs in your browser.
-It is an educational prototype, not a medical device.
-</p>
-</form>
+    </form>
 </section>
 
-<section class="card" aria-live="polite">
-<h2>Analysis Summary</h2>
-<div id="summary" class="notice">
-Enter measurements and choose Analyse Current Data.
-</div>
+<section class="card hidden" id="results">
+    <h2>🧠 Health Analysis Results</h2>
+    <p id="summary"></p>
+    <div id="findings"></div>
+</section>
 
-<h3>Individual Results</h3>
-<div id="tiles" class="tiles"></div>
+<section class="card hidden" id="assistant">
+    <h2>🤖 Health Analysis Assistant</h2>
+    <p id="assistantText"></p>
+    <p class="small">
+        This assistant uses programmed rules. It is not a real AI model
+        and cannot diagnose medical conditions.
+    </p>
+</section>
 
-<h3>Potential flags and explanations</h3>
-<div id="flags"><p class="small">No analysis has been run yet.</p></div>
+<section class="card hidden" id="chartCard">
+    <h2>📈 Health Readings Graph</h2>
+    <p class="small">
+        Bars show entered values relative to illustrative reference
+        values. Different measurements use different units, so the
+        bars should not be compared directly with each other.
+    </p>
+    <canvas id="chart" width="900" height="390"></canvas>
 </section>
 
 <section class="card">
-<h2>📊 Measurement Graph</h2>
-<p class="small">
-Bars use separate illustrative scales because these measurements have different units.
-Flagged measurements are highlighted.
-</p>
-<canvas id="chart" width="1000" height="440"></canvas>
+    <h2>🛡️ Mission Health Safety</h2>
+    <p class="small">
+        This project is for education and software demonstration only.
+        It is not a medically validated monitoring system. Readings can
+        be affected by sensors, individual circumstances and the space
+        environment. Actual mission decisions must follow qualified
+        medical guidance and approved mission procedures.
+    </p>
 </section>
 
-<section class="card">
-<h2>📄 Download Analysis Report</h2>
-<p class="small">
-Download the inputs, screening flags, explanations and suggested next steps.
-</p>
-<button id="download" disabled>Download Report (.txt)</button>
-</section>
 </main>
 
 <footer>
-Astronaut Health Guardian · Educational screening only · Not for medical or flight decisions
+    Astronaut Health Guardian | Student Space Technology Project
 </footer>
 
 <script>
-const form = document.getElementById('healthForm');
-const summary = document.getElementById('summary');
-const tiles = document.getElementById('tiles');
-const flagsBox = document.getElementById('flags');
-const canvas = document.getElementById('chart');
-const ctx = canvas.getContext('2d');
-const download = document.getElementById('download');
+const form = document.getElementById("healthForm");
 
-let reportText = '';
+let latestReport = "";
 
-const val = id => document.getElementById(id).value;
-
-function drawGraph(items) {
-  const W = canvas.width;
-  const H = canvas.height;
-
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#091a2e';
-  ctx.fillRect(0, 0, W, H);
-
-  const left = 245;
-  const barW = 600;
-  const rowH = 42;
-  const top = 20;
-
-  ctx.font = '16px Arial';
-  ctx.textBaseline = 'middle';
-
-  items.forEach((item, index) => {
-    const y = top + index * rowH;
-
-    ctx.fillStyle = '#dceaff';
-    ctx.textAlign = 'right';
-    ctx.fillText(item.name, left - 14, y + 12);
-
-    ctx.fillStyle = '#203a55';
-    ctx.fillRect(left, y, barW, 24);
-
-    const percentage = Math.max(0, Math.min(1, item.value / item.max));
-
-    ctx.fillStyle = item.flag ? '#ff7777' : '#55d5ff';
-    ctx.fillRect(left, y, Math.max(3, percentage * barW), 24);
-
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#fff';
-    ctx.fillText(item.display + (item.flag ? ' ⚠' : ''), left + 8, y + 12);
-  });
+function addFinding(list, level, title, reason, action, prevention) {
+    list.push({
+        level,
+        title,
+        reason,
+        action,
+        prevention
+    });
 }
 
-function addFlag(list, level, title, explanation, nextStep) {
-  list.push({level, title, explanation, nextStep});
-}
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
 
-form.addEventListener('submit', function(event) {
-  event.preventDefault();
+    const heart = Number(document.getElementById("heart").value);
+    const oxygen = Number(document.getElementById("oxygen").value);
+    const temperature = Number(document.getElementById("temperature").value);
+    const systolic = Number(document.getElementById("systolic").value);
+    const diastolic = Number(document.getElementById("diastolic").value);
+    const sleep = Number(document.getElementById("sleep").value);
+    const fatigue = Number(document.getElementById("fatigue").value);
+    const stress = Number(document.getElementById("stress").value);
 
-  const d = {
-    heart: Number(val('heartRate')),
-    spo2: Number(val('spo2')),
-    temp: Number(val('temperature')),
-    sys: Number(val('systolic')),
-    dia: Number(val('diastolic')),
-    hrv: val('hrv') === '' ? null : Number(val('hrv')),
-    sleep: Number(val('sleep')),
-    fatigue: Number(val('fatigue')),
-    stress: Number(val('stress')),
-    exercise: Number(val('exercise')),
-    intensity: val('intensity'),
-    hydration: val('hydration'),
-    dizziness: val('dizziness'),
-    headache: val('headache'),
-    nausea: val('nausea'),
-    breath: val('breath')
-  };
+    const hydration = document.getElementById("hydration").value;
+    const dizziness = document.getElementById("dizziness").value;
+    const headache = document.getElementById("headache").value;
+    const breathing = document.getElementById("breathing").value;
 
-  if (d.sys <= d.dia) {
-    alert('Please check your blood pressure values. Systolic pressure is usually higher than diastolic pressure.');
-    return;
-  }
+    if (systolic <= diastolic) {
+        alert("Please check the blood pressure values. Systolic pressure should be greater than diastolic pressure.");
+        return;
+    }
 
-  const flags = [];
+    const findings = [];
 
-  if (d.spo2 < 90) {
-    addFlag(flags, 'high', 'Very low SpO₂ entered',
-      'A value below 90% can be serious if accurate.',
-      'Confirm promptly and seek urgent medical assessment.');
-  } else if (d.spo2 < 95) {
-    addFlag(flags, 'review', 'SpO₂ below demo reference',
-      'This is below the illustrative 95% reference. Device accuracy and personal circumstances matter.',
-      'Recheck correctly and seek professional advice if it persists or symptoms occur.');
-  }
+    if (oxygen < 90) {
+        addFinding(findings, "high", "Very low oxygen reading",
+            "The entered oxygen saturation is below 90%.",
+            "Seek urgent medical assessment. If this is a real reading, do not delay care while repeating measurements.",
+            "Check device condition and follow approved monitoring procedures.");
+    } else if (oxygen < 95) {
+        addFinding(findings, "review", "Oxygen reading below typical range",
+            "The entered value is below 95%; individual circumstances matter.",
+            "Check the sensor and repeat the reading if safe. Seek medical advice if it remains low or symptoms occur.",
+            "Use approved equipment and follow the mission team's monitoring plan.");
+    }
 
-  if (d.temp < 35) {
-    addFlag(flags, 'high', 'Low temperature entered',
-      'A temperature below 35°C can be an emergency if accurate.',
-      'Confirm promptly and seek urgent medical care.');
-  } else if (d.temp >= 38) {
-    addFlag(flags, 'review', 'Elevated temperature entered',
-      'This is above the demo flag point and may have several causes.',
-      'Recheck with a reliable thermometer and seek medical advice as appropriate.');
-  }
+    if (temperature < 35) {
+        addFinding(findings, "high", "Low body temperature reading",
+            "The entered temperature is below 35°C.",
+            "Seek urgent medical assessment and follow approved warming and medical procedures.",
+            "Use reliable temperature equipment and appropriate environmental protection.");
+    } else if (temperature >= 38) {
+        addFinding(findings, "review", "Elevated body temperature",
+            "The entered temperature is 38°C or higher.",
+            "Recheck the measurement if appropriate and contact a qualified medical professional.",
+            "Follow hygiene, infection-control and mission health procedures.");
+    }
 
-  if (d.heart < 50 || d.heart > 120) {
-    addFlag(flags, 'review', 'Heart rate outside demo screening band',
-      'Rest, exertion, age, medicines, and symptoms affect heart rate.',
-      'Consider context and seek medical advice for persistent unusual readings or symptoms.');
-  } else if (d.heart < 60 || d.heart > 100) {
-    addFlag(flags, 'info', 'Heart rate outside illustrative adult resting interval',
-      'This is a general adult resting reference, not a universal astronaut limit.',
-      'Interpret with activity context and personal baseline.');
-  }
+    if (heart < 50 || heart > 120) {
+        addFinding(findings, "review", "Heart rate outside illustrative range",
+            "The entered heart rate is below 50 or above 120 BPM.",
+            "Consider recent activity and symptoms. Recheck at rest if appropriate and seek medical advice, especially if persistent.",
+            "Track readings consistently and follow the mission team's monitoring instructions.");
+    } else if (heart < 60 || heart > 100) {
+        addFinding(findings, "review", "Heart rate needs context",
+            "The reading is outside a commonly quoted resting adult range of 60–100 BPM.",
+            "Consider exercise, medications and individual baseline. Ask the mission medical team if concerned.",
+            "Measure under consistent conditions when a resting reading is needed.");
+    }
 
-  if (d.sys >= 180 || d.dia >= 120) {
-    addFlag(flags, 'high', 'Very high blood pressure entered',
-      'A reading in this range can be dangerous, especially with serious symptoms.',
-      'Seek urgent professional guidance; emergency symptoms require emergency care.');
-  } else if (d.sys >= 140 || d.dia >= 90) {
-    addFlag(flags, 'review', 'Blood pressure elevated in this demo',
-      'One reading alone does not diagnose hypertension.',
-      'Repeat using a validated cuff and seek advice if elevated readings persist.');
-  } else if (d.sys < 90 || d.dia < 60) {
-    addFlag(flags, 'review', 'Blood pressure low in this demo',
-      'Low readings may be normal for some people but matter if symptoms occur.',
-      'Seek medical advice if you feel unwell.');
-  }
+    if (systolic >= 180 || diastolic >= 120) {
+        addFinding(findings, "high", "Very high blood pressure reading",
+            "The entered value reaches 180 systolic or 120 diastolic.",
+            "Seek urgent medical guidance. If accompanied by chest pain, breathing difficulty, weakness or confusion, seek emergency care.",
+            "Use a suitable cuff and follow approved blood pressure measurement procedures.");
+    } else if (systolic >= 140 || diastolic >= 90) {
+        addFinding(findings, "review", "Elevated blood pressure reading",
+            "The entered value is in a range that may need clinical review.",
+            "Repeat the measurement correctly if appropriate and discuss persistent elevation with a qualified clinician.",
+            "Follow the mission team's guidance for monitoring blood pressure.");
+    } else if (systolic < 90 || diastolic < 60) {
+        addFinding(findings, "review", "Low blood pressure reading",
+            "The entered value is below 90 systolic or 60 diastolic.",
+            "Consider symptoms and seek medical advice, particularly if dizzy, faint or unwell.",
+            "Follow approved hydration and health monitoring guidance.");
+    }
 
-  if (d.hrv !== null && d.hrv < 20) {
-    addFlag(flags, 'info', 'HRV value triggers a demo prompt',
-      'HRV varies greatly by device, age, health, breathing and time of day.',
-      'Compare only with consistent personal measurements and device guidance.');
-  }
+    if (sleep < 6) {
+        addFinding(findings, "review", "Short sleep duration",
+            "The entered sleep duration is under six hours.",
+            "Review workload and sleep opportunities. Follow the mission team's sleep plan.",
+            "Maintain a regular sleep schedule and reduce avoidable interruptions.");
+    } else if (sleep < 8) {
+        addFinding(findings, "review", "Sleep may be insufficient",
+            "The entered duration is below the commonly recommended 7–9 hours for many adults.",
+            "Consider whether more sleep is possible and follow mission scheduling guidance.",
+            "Keep a consistent sleep routine and a suitable sleep environment.");
+    }
 
-  if (d.sleep < 6) {
-    addFlag(flags, 'review', 'Short sleep reported',
-      'Less than 6 hours may impair alertness for many people.',
-      'Prioritise appropriate rest and report persistent sleep problems.');
-  } else if (d.sleep < 8) {
-    addFlag(flags, 'info', 'Sleep below demo prompt',
-      'Eight hours is an educational reference, not a fixed requirement for every adult.',
-      'Review sleep needs and mission schedule with qualified staff.');
-  }
+    if (fatigue >= 8) {
+        addFinding(findings, "review", "High reported fatigue",
+            "The fatigue score is 8 or above out of 10.",
+            "Pause demanding tasks when safe, notify the mission health officer and assess possible causes.",
+            "Monitor workload, sleep and recovery under the mission team's plan.");
+    }
 
-  if (d.fatigue >= 8) {
-    addFlag(flags, 'review', 'High self-reported fatigue',
-      'High fatigue can affect attention and performance.',
-      'Pause risky activity and notify responsible medical or mission personnel.');
-  }
+    if (stress >= 8) {
+        addFinding(findings, "review", "High reported stress",
+            "The stress score is 8 or above out of 10.",
+            "Use approved stress-management techniques and contact the mission support team if needed.",
+            "Build in appropriate rest, communication and planned recovery time.");
+    }
 
-  if (d.stress >= 8) {
-    addFlag(flags, 'review', 'High self-reported stress',
-      'A high stress score is not a diagnosis.',
-      'Use approved support and report persistent or overwhelming stress.');
-  }
+    if (hydration === "low") {
+        addFinding(findings, "review", "Possible hydration concern",
+            "The user selected a possible hydration concern.",
+            "Follow the mission hydration plan and ask the medical team for guidance if symptoms occur.",
+            "Monitor fluid intake according to approved mission procedures.");
+    } else if (hydration === "unknown") {
+        addFinding(findings, "review", "Hydration status uncertain",
+            "The user is unsure about hydration.",
+            "Review the mission's hydration guidance and seek advice if feeling unwell.",
+            "Use approved methods to track fluid intake.");
+    }
 
-  if (d.hydration === 'low') {
-    addFlag(flags, 'info', 'Possible low hydration reported',
-      'Thirst or low reported intake does not confirm dehydration.',
-      'Follow approved hydration guidance and seek help if unwell.');
-  }
+    if (dizziness === "yes") {
+        addFinding(findings, "review", "Dizziness reported",
+            "Dizziness may have several causes and needs context.",
+            "Pause hazardous tasks and inform the medical team. Seek urgent help if severe or accompanied by other concerning symptoms.",
+            "Follow medical guidance on hydration, rest and activity.");
+    }
 
-  if (d.dizziness === 'yes') {
-    addFlag(flags, 'review', 'Dizziness reported',
-      'Dizziness can have many causes and is important alongside other readings.',
-      'Sit or lie safely and notify medical staff; seek urgent help if severe.');
-  }
+    if (headache === "yes") {
+        addFinding(findings, "review", "Headache reported",
+            "A headache can have many possible causes.",
+            "Assess severity and other symptoms. Contact the medical team if persistent, severe or unusual.",
+            "Follow approved rest, hydration and symptom-monitoring guidance.");
+    }
 
-  if (d.headache === 'yes') {
-    addFlag(flags, 'info', 'Headache reported',
-      'Headache is nonspecific and needs context.',
-      'Report severe, sudden, persistent or worsening symptoms promptly.');
-  }
+    if (breathing === "yes") {
+        addFinding(findings, "high", "Breathing difficulty or chest discomfort",
+            "These symptoms may indicate a serious problem.",
+            "Seek emergency medical assistance immediately and follow mission emergency procedures.",
+            "Follow approved emergency preparation and reporting procedures.");
+    }
 
-  if (d.nausea === 'yes') {
-    addFlag(flags, 'info', 'Nausea reported',
-      'Nausea can have many causes.',
-      'Report persistent or worsening symptoms.');
-  }
+    const hasHigh = findings.some(item => item.level === "high");
 
-  if (d.breath === 'yes') {
-    addFlag(flags, 'high', 'Breathing difficulty or chest discomfort reported',
-      'These symptoms can indicate a serious problem regardless of numerical readings.',
-      'Seek emergency medical assistance immediately.');
-  }
+    if (findings.length === 0) {
+        addFinding(findings, "normal", "No configured rules were triggered",
+            "The entered readings did not trigger this prototype's warning rules.",
+            "Continue following approved monitoring procedures. This result does not prove that the person is healthy.",
+            "Maintain regular monitoring and follow the mission medical team's instructions.");
+    }
 
-  if (d.exercise > 180 && d.intensity === 'vigorous') {
-    addFlag(flags, 'info', 'High vigorous exercise duration entered',
-      'Check the reported duration against the planned exercise protocol.',
-      'Compare with the approved activity plan and recovery needs.');
-  }
+    const results = document.getElementById("results");
+    const findingsDiv = document.getElementById("findings");
 
-  if (flags.length === 0) {
-    addFlag(flags, 'info', 'No demo rules triggered',
-      'No configured screening rule was triggered. This does not prove that someone is healthy.',
-      'Consider context, proper measurement technique and qualified medical review.');
-  }
+    results.classList.remove("hidden");
+    document.getElementById("assistant").classList.remove("hidden");
+    document.getElementById("chartCard").classList.remove("hidden");
 
-  const high = flags.filter(f => f.level === 'high').length;
-  const review = flags.filter(f => f.level === 'review').length;
+    document.getElementById("summary").textContent =
+        hasHigh ? "Priority alert: one or more potentially urgent findings need attention."
+        : findings.some(item => item.level === "review")
+        ? "Review recommended: one or more readings or symptoms need attention."
+        : "No configured warning rules were triggered. This is not a medical clearance.";
 
-  const status = high
-    ? 'HIGH-PRIORITY FLAG(S) — seek appropriate medical assessment.'
-    : review
-    ? 'REVIEW NEEDED — one or more screening rules were triggered.'
-    : 'No high-priority demo flags. Review the results and context.';
+    findingsDiv.innerHTML = "";
 
-  summary.textContent = status +
-    '\n\nThis is educational screening, not a diagnosis or flight clearance. Never delay emergency care because of this tool.';
+    findings.forEach(item => {
+        const box = document.createElement("div");
+        box.className = "result " + item.level;
 
-  tiles.innerHTML = '';
+        const title = document.createElement("h3");
+        title.textContent =
+            (item.level === "high" ? "🚨 " :
+             item.level === "review" ? "⚠️ " : "✅ ") + item.title;
 
-  const entries = [
-    ['Heart rate', d.heart + ' BPM'],
-    ['SpO₂', d.spo2 + '%'],
-    ['Temperature', d.temp + ' °C'],
-    ['Blood pressure', d.sys + '/' + d.dia + ' mmHg'],
-    ['HRV', d.hrv === null ? 'Not entered' : d.hrv + ' ms'],
-    ['Sleep', d.sleep + ' hours'],
-    ['Fatigue', d.fatigue + '/10'],
-    ['Stress', d.stress + '/10'],
-    ['Exercise', d.exercise + ' min (' + d.intensity + ')'],
-    ['Hydration', d.hydration],
-    ['Dizziness', d.dizziness],
-    ['Headache', d.headache],
-    ['Nausea', d.nausea],
-    ['Breathing/chest symptom', d.breath]
-  ];
+        const reason = document.createElement("p");
+        reason.textContent = "Analysis: " + item.reason;
 
-  entries.forEach(function(entry) {
-    const div = document.createElement('div');
-    div.className = 'tile';
+        const action = document.createElement("p");
+        action.textContent = "Suggested action: " + item.action;
 
-    const label = document.createElement('span');
-    label.textContent = entry[0];
+        const prevention = document.createElement("p");
+        prevention.textContent = "Prevention / follow-up: " + item.prevention;
 
-    const strong = document.createElement('strong');
-    strong.textContent = entry[1];
+        box.append(title, reason, action, prevention);
+        findingsDiv.appendChild(box);
+    });
 
-    div.append(label, strong);
-    tiles.append(div);
-  });
+    document.getElementById("assistantText").textContent =
+        hasHigh
+        ? "The rules identified a potentially urgent finding. Follow the urgent advice shown above and contact qualified medical support. Do not rely on this prototype to assess safety."
+        : findings.some(item => item.level === "review")
+        ? "Some readings or symptoms need review. Read each explanation, follow the suggested actions and contact qualified medical support when appropriate. I am a rule-based assistant, not a clinician."
+        : "No configured warning rules were triggered. Keep following approved monitoring procedures. This result cannot rule out a medical problem.";
 
-  flagsBox.innerHTML = '';
+    drawChart([
+        {name: "Heart rate", value: heart, max: 150, warning: heart < 50 || heart > 120},
+        {name: "Oxygen saturation", value: oxygen, max: 100, warning: oxygen < 95},
+        {name: "Temperature", value: temperature, max: 42, warning: temperature < 35 || temperature >= 38},
+        {name: "Systolic pressure", value: systolic, max: 200, warning: systolic < 90 || systolic >= 140},
+        {name: "Diastolic pressure", value: diastolic, max: 130, warning: diastolic < 60 || diastolic >= 90},
+        {name: "Sleep hours", value: sleep, max: 12, warning: sleep < 7},
+        {name: "Fatigue", value: fatigue, max: 10, warning: fatigue >= 8},
+        {name: "Stress", value: stress, max: 10, warning: stress >= 8}
+    ]);
 
-  flags.forEach(function(flag) {
-    const div = document.createElement('div');
-    div.className = 'flag ' + (flag.level === 'high' ? 'high' :
-      flag.level === 'info' ? 'info' : '');
+    latestReport =
+        "ASTRONAUT HEALTH GUARDIAN\n" +
+        "Educational demonstration report\n" +
+        "Generated: " + new Date().toLocaleString() + "\n\n" +
+        "Heart rate: " + heart + " BPM\n" +
+        "Oxygen saturation: " + oxygen + "%\n" +
+        "Temperature: " + temperature + " °C\n" +
+        "Blood pressure: " + systolic + "/" + diastolic + "\n" +
+        "Sleep: " + sleep + " hours\n" +
+        "Fatigue: " + fatigue + "/10\n" +
+        "Stress: " + stress + "/10\n" +
+        "Hydration self-assessment: " + hydration + "\n" +
+        "Dizziness: " + dizziness + "\n" +
+        "Headache: " + headache + "\n" +
+        "Breathing difficulty/chest discomfort: " + breathing + "\n\n" +
+        "ANALYSIS AND SUGGESTED ACTIONS\n\n" +
+        findings.map(item =>
+            item.title + "\n" +
+            "Analysis: " + item.reason + "\n" +
+            "Suggested action: " + item.action + "\n" +
+            "Prevention/follow-up: " + item.prevention
+        ).join("\n\n") +
+        "\n\nIMPORTANT: This educational prototype is not a medical device, diagnosis or medical clearance. Follow qualified medical advice and approved mission procedures.";
 
-    const title = document.createElement('strong');
-    title.textContent =
-      (flag.level === 'high' ? '🔴 HIGH PRIORITY: ' :
-       flag.level === 'review' ? '🟡 REVIEW: ' : '🔵 NOTE: ') + flag.title;
+    let downloadButton = document.getElementById("downloadReport");
 
-    const explanation = document.createElement('p');
-    explanation.textContent = flag.explanation;
+    if (!downloadButton) {
+        downloadButton = document.createElement("button");
+        downloadButton.id = "downloadReport";
+        downloadButton.textContent = "📄 Download Health Report";
+        downloadButton.addEventListener("click", downloadReport);
+        results.appendChild(downloadButton);
+    }
 
-    const next = document.createElement('p');
-    next.textContent = 'Suggested next step: ' + flag.nextStep;
-
-    div.append(title, explanation, next);
-    flagsBox.append(div);
-  });
-
-  const graphItems = [
-    {name:'Heart rate',value:d.heart,max:200,display:d.heart+' BPM',flag:d.heart<50||d.heart>120},
-    {name:'SpO₂',value:d.spo2,max:100,display:d.spo2+'%',flag:d.spo2<95},
-    {name:'Temperature',value:d.temp,max:45,display:d.temp+' °C',flag:d.temp<35||d.temp>=38},
-    {name:'Systolic BP',value:d.sys,max:220,display:d.sys+' mmHg',flag:d.sys>=140||d.sys<90},
-    {name:'Diastolic BP',value:d.dia,max:140,display:d.dia+' mmHg',flag:d.dia>=90||d.dia<60},
-    {name:'Sleep',value:d.sleep,max:12,display:d.sleep+' h',flag:d.sleep<6},
-    {name:'Fatigue',value:d.fatigue,max:10,display:d.fatigue+'/10',flag:d.fatigue>=8},
-    {name:'Stress',value:d.stress,max:10,display:d.stress+'/10',flag:d.stress>=8},
-    {name:'Exercise',value:d.exercise,max:300,display:d.exercise+' min',flag:d.exercise>180}
-  ];
-
-  drawGraph(graphItems);
-
-  reportText =
-    'ASTRONAUT HEALTH GUARDIAN — EDUCATIONAL SCREENING REPORT\n' +
-    'Generated: ' + new Date().toLocaleString() + '\n\n' +
-    entries.map(e => e[0] + ': ' + e[1]).join('\n') +
-    '\n\nSUMMARY\n' + status + '\n\nFLAGS AND EXPLANATIONS\n' +
-    flags.map((f,i) =>
-      (i+1) + '. ' + f.level.toUpperCase() + ' — ' + f.title +
-      '\nExplanation: ' + f.explanation +
-      '\nSuggested next step: ' + f.nextStep
-    ).join('\n\n') +
-    '\n\nLIMITATIONS\nThis prototype is educational only. It is not medically validated, does not diagnose disease, and cannot determine astronaut fitness for flight. Values are user-entered, not sensor-verified. Screening thresholds are simplified prompts and may not apply to an individual. Seek qualified medical care for health concerns and emergency services for urgent symptoms. Do not use this report for medical or mission decisions.\n';
-
-  download.disabled = false;
+    results.scrollIntoView({behavior: "smooth"});
 });
 
-download.addEventListener('click', function() {
-  if (!reportText) return;
+function drawChart(data) {
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext("2d");
 
-  const blob = new Blob([reportText], {
-    type: 'text/plain;charset=utf-8'
-  });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-
-  link.href = url;
-  link.download = 'astronaut-health-analysis-report.txt';
-  link.click();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
-
-form.addEventListener('reset', function() {
-  setTimeout(function() {
-    summary.textContent = 'Enter measurements and choose Analyse Current Data.';
-    tiles.innerHTML = '';
-    flagsBox.innerHTML = '<p class="small">No analysis has been run yet.</p>';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    reportText = '';
-    download.disabled = true;
-  }, 0);
+    ctx.font = "15px Arial";
+
+    data.forEach((item, index) => {
+        const y = 25 + index * 44;
+        const barX = 210;
+        const barWidth = 480;
+        const width = Math.max(0, Math.min(barWidth, item.value / item.max * barWidth));
+
+        ctx.fillStyle = "#eaf4ff";
+        ctx.fillText(item.name, 10, y + 18);
+
+        ctx.fillStyle = "#1c3653";
+        ctx.fillRect(barX, y, barWidth, 24);
+
+        ctx.fillStyle = item.warning ? "#ff6464" : "#49d9f5";
+        ctx.fillRect(barX, y, width, 24);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(String(item.value), barX + barWidth + 12, y + 18);
+    });
+}
+
+function downloadReport() {
+    if (!latestReport) return;
+
+    const blob = new Blob([latestReport], {type: "text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "astronaut-health-report.txt";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+form.addEventListener("reset", function() {
+    document.getElementById("results").classList.add("hidden");
+    document.getElementById("assistant").classList.add("hidden");
+    document.getElementById("chartCard").classList.add("hidden");
+    latestReport = "";
 });
 </script>
+
 </body>
 </html>
