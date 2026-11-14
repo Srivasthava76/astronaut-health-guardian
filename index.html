@@ -200,7 +200,7 @@ label{display:block;color:#d6eaff}
 <option value="chest">Chest discomfort</option><option value="other">Other</option>
 </select></div>
 </div>
-<button type="button" onclick="runPhysicalAnalysis()">Analyse Physical Readings →</button>
+<button type="button" id="analysePhysicalButton" onclick="runPhysicalAnalysis()">Analyse Physical Readings →</button>
 <button type="button" class="secondary" onclick="samplePhysical()">Load Sample Data</button>
 <button type="reset" class="secondary">Clear</button>
 </form>
@@ -317,6 +317,16 @@ label{display:block;color:#d6eaff}
 <div id="historyTable"></div>
 </div>
 
+<div class="card" id="nasaResearchLinks">
+  <h3 style="color:#006400;">NASA Research Starting Points</h3>
+  <p style="color:#006400;">Explore these official NASA resources for further information about astronaut health and human spaceflight standards:</p>
+  <ul style="color:#006400; line-height:2;">
+    <li><a href="https://www.nasa.gov/hrp/risks/" target="_blank" rel="noopener noreferrer" style="color:#006400; font-weight:700;">NASA Human Research Program – Risks</a></li>
+    <li><a href="https://www.nasa.gov/reference/nasa-std-3001v1/" target="_blank" rel="noopener noreferrer" style="color:#006400; font-weight:700;">NASA Human System Standard</a></li>
+    <li><a href="https://www.nasa.gov/humans-in-space/spaceflight-standard-measures-characterizing-how-humans-adapt-in-space/" target="_blank" rel="noopener noreferrer" style="color:#006400; font-weight:700;">NASA Spaceflight Standard Measures</a></li>
+  </ul>
+</div>
+
 <button onclick="openHealthQuest()">Open Astronaut Health Quest →</button>
 <button class="secondary" onclick="showPage('aboutPage')">← Back to Home</button>
 </section>
@@ -431,16 +441,12 @@ function physicalData(){
  };
 }
 
-document.getElementById("physicalForm").addEventListener("submit",function(e){
- e.preventDefault();
- lastPhysical=physicalData();
- currentType="physical";
- recoverySelected=false;
- analysePhysical(lastPhysical);
-});
-
-/* Direct button handler: avoids browser form-validation blocking the analysis click. */
 function runPhysicalAnalysis(){
+ if(!currentName){
+  alert("Please log in first.");
+  showPage("loginPage");
+  return;
+ }
  const requiredFields=[
   ["heartRate","Heart Rate"],
   ["spo2","SpO₂"],
@@ -454,68 +460,73 @@ function runPhysicalAnalysis(){
   return !el || el.value.trim()==="" || !Number.isFinite(Number(el.value));
  });
  if(missing.length){
-  alert("Please enter a valid number for: "+missing.map(x=>x[1]).join(", ")+".");
-  if(missing[0]) document.getElementById(missing[0][0]).focus();
+  alert("Please enter valid values for: "+missing.map(x=>x[1]).join(", "));
+  const first=document.getElementById(missing[0][0]);
+  if(first) first.focus();
   return;
  }
- lastPhysical=physicalData();
- currentType="physical";
- recoverySelected=false;
- analysePhysical(lastPhysical);
+ const form=document.getElementById("physicalForm");
+ if(!form.checkValidity()){
+  form.reportValidity();
+  return;
+ }
+ try{
+  lastPhysical=physicalData();
+  currentType="physical";
+  recoverySelected=false;
+  analysePhysical(lastPhysical);
+ }catch(error){
+  console.error("OrbitCare physical analysis error:",error);
+  alert("Physical analysis could not be completed. Please check the entered readings and try again.");
+ }
 }
 
+document.getElementById("physicalForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ runPhysicalAnalysis();
+});
+
 function analysePhysical(d){
- try {
-  currentFlags=[];
-  currentSuggestions=[];
+ currentFlags=[];
+ currentSuggestions=[];
 
-  const measurements=[
-   {name:"Heart Rate",value:d.heartRate,unit:"BPM",range:"60–100 BPM",ok:d.heartRate>=60&&d.heartRate<=100,advice:"Recheck after resting and note the measurement conditions. If it remains unusual or you feel unwell, contact a qualified medical professional or mission medical officer."},
-   {name:"Blood Oxygen (SpO₂)",value:d.spo2,unit:"%",range:"95–100% (general reference)",ok:d.spo2>=95,advice:"Repeat the measurement according to the device instructions. A low or persistent unusual reading needs prompt assessment by qualified medical staff; do not try to correct it with exercise."},
-   {name:"Body Temperature",value:d.temperature,unit:"°C",range:"36.1–37.2 °C (general reference)",ok:d.temperature>=36.1&&d.temperature<=37.2,advice:"Recheck using the same reliable method. If unusual or accompanied by symptoms, contact qualified medical staff."},
-   {name:"Systolic Blood Pressure",value:d.systolic,unit:"mmHg",range:"90–120 mmHg (general reference)",ok:d.systolic>=90&&d.systolic<=120,advice:"Repeat the measurement after a quiet rest, following the monitor instructions. Discuss repeated unusual readings with qualified medical staff."},
-   {name:"Diastolic Blood Pressure",value:d.diastolic,unit:"mmHg",range:"60–80 mmHg (general reference)",ok:d.diastolic>=60&&d.diastolic<=80,advice:"Repeat the measurement after a quiet rest, following the monitor instructions. Discuss repeated unusual readings with qualified medical staff."},
-   {name:"Sleep Duration",value:d.sleep,unit:"hours",range:"7–9 hours (general adult reference; individual needs vary)",ok:d.sleep>=7&&d.sleep<=9,advice:"Review sleep timing, light exposure and rest opportunities with the mission team. Individual sleep needs and mission schedules vary."}
-  ];
+ const ranges=[
+  ["Heart Rate",d.heartRate+" BPM","60–100 BPM",d.heartRate>=60&&d.heartRate<=100],
+  ["SpO₂",d.spo2+"%","95–100%",d.spo2>=95],
+  ["Temperature",d.temperature+" °C","36.1–37.2 °C",d.temperature>=36.1&&d.temperature<=37.2],
+  ["Systolic BP",d.systolic+" mmHg","90–120 mmHg",d.systolic>=90&&d.systolic<=120],
+  ["Diastolic BP",d.diastolic+" mmHg","60–80 mmHg",d.diastolic>=60&&d.diastolic<=80],
+  ["Sleep",d.sleep+" hours","Individual needs vary",d.sleep>=7&&d.sleep<=9]
+ ];
 
-  const numeric=measurements.every(m=>Number.isFinite(Number(m.value)));
-  if(!numeric) throw new Error("One or more numeric readings are missing or invalid. Please return to the form and enter every required value.");
+ ranges.forEach(r=>{
+  if(!r[3])currentFlags.push(r[0]+" is outside this general reference range.");
+ });
 
-  measurements.forEach(m=>{
-   if(!m.ok){
-    currentFlags.push(m.name+" is outside the displayed general reference range.");
-    currentSuggestions.push(m.name+": "+m.advice);
-   }
-  });
-  if(d.fatigue==="high"){
-   currentFlags.push("High fatigue was reported.");
-   currentSuggestions.push("Fatigue: consider an appropriate rest opportunity and report persistent or worsening fatigue to the mission medical team.");
-  }
-  if(d.stress==="high"){
-   currentFlags.push("High stress was reported.");
-   currentSuggestions.push("Stress: consider a quiet break, a relaxation activity, or a supportive conversation with a trusted crew member.");
-  }
-  if(d.symptoms!=="none"){
-   currentFlags.push("Reported symptom: "+d.symptoms+".");
-   currentSuggestions.push("Symptoms: report this symptom to a qualified healthcare professional or mission medical officer. Seek prompt help for breathing difficulty, chest discomfort, fainting, or severe/worsening symptoms.");
-  }
-  if(!currentSuggestions.length) currentSuggestions.push("No readings were outside the displayed general reference ranges and no additional concern was selected. Continue established mission health routines and follow your medical team's guidance.");
+ if(d.fatigue==="high")currentFlags.push("High fatigue was reported.");
+ if(d.stress==="high")currentFlags.push("High stress was reported.");
+ if(d.symptoms!=="none")currentFlags.push("Reported symptom: "+d.symptoms+".");
 
-  const env=String(d.environment||"Not specified");
-  document.getElementById("analysisHeading").textContent="Physical Health Analysis for "+(currentName||"Astronaut")+" | Measurement location: "+env;
-  document.getElementById("analysisSummary").innerHTML=
-   `<div class="result">Physical readings analysed successfully.<br><strong>Measurement location:</strong> ${safe(env)}<br><strong>Measurements reviewed:</strong> ${measurements.length}</div>`;
-  document.getElementById("analysisDetails").innerHTML=
-   `<h3>Reading-by-reading assessment</h3><div style="overflow-x:auto"><table><thead><tr><th>Measurement</th><th>Your Reading</th><th>General Reference</th><th>Result</th></tr></thead><tbody>`+
-   measurements.map(m=>`<tr><td>${safe(m.name)}</td><td>${safe(m.value)} ${safe(m.unit)}</td><td>${safe(m.range)}</td><td>${m.ok?'<span class="good">Within displayed range</span>':'<span class="warning">Review reading</span>'}</td></tr>`).join("")+`</tbody></table></div>`+
-   `<h3>Additional observations</h3>`+
-   (currentFlags.length?currentFlags.map(f=>`<div class="result warning">${safe(f)}</div>`).join(""):`<div class="result good">No values outside the displayed general reference ranges were identified from the entered data.</div>`)+
-   `<div class="result"><strong>Environment context — ${safe(env)}:</strong> The selected location is recorded in this assessment. These general reference values are not environment-specific astronaut limits. OrbitCare does not invent separate clinical thresholds for the Moon, Mars, spacecraft or space stations.</div>`;
-  showPage("analysisPage");
- } catch(err) {
-  console.error("OrbitCare physical analysis error:",err);
-  alert("Physical analysis could not be completed: "+err.message);
- }
+ if(d.sleep<7)currentSuggestions.push("Consider discussing your sleep routine and rest opportunities with the mission medical team.");
+ if(d.fatigue==="high")currentSuggestions.push("Consider a suitable rest period and discuss persistent fatigue with the medical team.");
+ if(d.stress==="high")currentSuggestions.push("Consider a quiet break, a relaxation activity or a conversation with a trusted crew member.");
+ if(d.symptoms!=="none")currentSuggestions.push("Please report symptoms to a qualified medical professional or mission medical officer.");
+ if(!currentSuggestions.length)currentSuggestions.push("Continue following your established rest, hydration and wellbeing routines.");
+
+ document.getElementById("analysisHeading").textContent="Physical Health Analysis for "+currentName+" | Measurement location: "+d.environment;
+
+ document.getElementById("analysisSummary").innerHTML=
+ `<div class="result">Your physical readings have been analysed.<br><strong>Measurement location:</strong> ${safe(d.environment)}</div>`;
+
+ document.getElementById("analysisDetails").innerHTML=
+ `<table><tr><th>Measurement</th><th>Your Reading</th><th>General Reference</th><th>Review</th></tr>`+
+ ranges.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]?"Within range":"Review"}</td></tr>`).join("")+
+ `</table>`+
+ (currentFlags.length?
+ currentFlags.map(f=>`<div class="result warning">${safe(f)}</div>`).join("") :
+ `<div class="result good">No values outside the displayed general reference ranges were identified.</div>`);
+
+ showPage("analysisPage");
 }
 
 /* MENTAL DATA */
