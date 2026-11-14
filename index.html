@@ -3,12 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07111f">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="author" content="V.S. Srivasthava">
 <meta name="description" content="OrbitCare - Astronaut Physical and Mental Wellbeing Monitoring">
 <title>OrbitCare | V.S. Srivasthava</title>
@@ -698,18 +692,7 @@ function printReport(){
  <img src="${chartImage}">
  <p>Created by V.S. Srivasthava</p>
  <script>window.onload=function(){window.print()}<\/script>
- 
-<script>
-// Enable offline app-shell support when hosted on HTTPS or localhost.
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(error => {
-      console.error("OrbitCare service worker registration failed:", error);
-    });
-  });
-}
-</script>
-</body>
+ </body>
  </html>`);
 
  w.document.close();
@@ -734,16 +717,5 @@ document.getElementById("checkDate").value=
 
 </script>
 
-
-<script>
-// Enable offline app-shell support when hosted on HTTPS or localhost.
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(error => {
-      console.error("OrbitCare service worker registration failed:", error);
-    });
-  });
-}
-</script>
 </body>
 </html>
