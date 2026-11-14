@@ -9,36 +9,169 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#07111f;color:#eaf5ff;font-family:Arial,sans-serif}
-header{background:#102744;padding:22px;text-align:center;border-bottom:2px solid #62d9ff}
+
+html{
+ min-height:100%;
+ background:#050b18;
+}
+
+body{
+ margin:0;
+ min-height:100vh;
+ background:#07111f url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=85') center center/cover fixed no-repeat;
+ color:#eaf5ff;
+ font-family:Arial,sans-serif;
+ position:relative;
+ isolation:isolate;
+}
+
+body::before{
+ content:"";
+ position:fixed;
+ inset:0;
+ background:rgba(3,10,25,.62);
+ z-index:-1;
+ pointer-events:none;
+}
+
+header{
+ background:rgba(8,27,51,.88);
+ backdrop-filter:blur(8px);
+ padding:22px;
+ text-align:center;
+ border-bottom:2px solid #62d9ff;
+}
+
 header h1{color:#62d9ff;margin:0}
 header p{color:#c6d8eb}
-main{max-width:1050px;margin:25px auto;padding:15px}
+
+main{
+ max-width:1050px;
+ margin:25px auto;
+ padding:15px;
+}
+
 .page{display:none}
 .page.active{display:block}
-.card{background:#102744;border:1px solid #294968;border-radius:14px;padding:22px;margin:18px 0}
+
+.card{
+ background:rgba(16,39,68,.91);
+ backdrop-filter:blur(7px);
+ border:1px solid rgba(98,217,255,.28);
+ border-radius:14px;
+ padding:22px;
+ margin:18px 0;
+}
+
 h2,h3{color:#62d9ff}
-input,select{width:100%;padding:12px;margin:8px 0 15px;border-radius:8px;border:1px solid #496783;background:#071b30;color:white}
-button{background:#159bc5;color:white;border:0;padding:12px 19px;border-radius:8px;cursor:pointer;margin:5px;font-weight:bold}
+
+input,select{
+ width:100%;
+ padding:12px;
+ margin:8px 0 15px;
+ border-radius:8px;
+ border:1px solid #496783;
+ background:#071b30;
+ color:white;
+}
+
+button{
+ background:#159bc5;
+ color:white;
+ border:0;
+ padding:12px 19px;
+ border-radius:8px;
+ cursor:pointer;
+ margin:5px;
+ font-weight:bold;
+}
+
 button:hover{background:#08799f}
 .secondary{background:#405a76}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-.choice{padding:30px 15px;text-align:center;cursor:pointer;transition:.2s}
-.choice:hover{border-color:#62d9ff;transform:translateY(-3px)}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+ gap:15px;
+}
+
+.choice{
+ padding:30px 15px;
+ text-align:center;
+ cursor:pointer;
+ transition:.2s;
+}
+
+.choice:hover{
+ border-color:#62d9ff;
+ transform:translateY(-3px);
+}
+
 .big{font-size:40px}
-.small{color:#b7cce0;font-size:14px;line-height:1.6}
-.result{padding:15px;background:#071b30;border-left:4px solid #62d9ff;border-radius:8px;margin:12px 0}
+
+.small{
+ color:#b7cce0;
+ font-size:14px;
+ line-height:1.6;
+}
+
+.result{
+ padding:15px;
+ background:#071b30;
+ border-left:4px solid #62d9ff;
+ border-radius:8px;
+ margin:12px 0;
+}
+
 .good{border-left-color:#43d69a}
 .warning{border-left-color:#ffc45c}
 .alert{border-left-color:#ff7777}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-td,th{padding:11px;border:1px solid #34516c;text-align:left}
-th{background:#173b5e;color:#62d9ff}
-canvas{width:100%;max-height:300px;background:#071b30;border-radius:10px;margin-top:15px}
-footer{text-align:center;color:#8fa9c1;padding:25px}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ margin-top:15px;
+}
+
+td,th{
+ padding:11px;
+ border:1px solid #34516c;
+ text-align:left;
+}
+
+th{
+ background:#173b5e;
+ color:#62d9ff;
+}
+
+canvas{
+ width:100%;
+ max-height:300px;
+ background:#071b30;
+ border-radius:10px;
+ margin-top:15px;
+}
+
+footer{
+ text-align:center;
+ color:#c3d8ec;
+ padding:25px;
+ text-shadow:0 1px 4px #000;
+}
+
 .hidden{display:none!important}
-.score{font-size:40px;color:#62d9ff;font-weight:bold}
-label{display:block;color:#d6eaff}
+
+.score{
+ font-size:40px;
+ color:#62d9ff;
+ font-weight:bold;
+}
+
+label{
+ display:block;
+ color:#d6eaff;
+}
+
 .pageActions{margin-top:20px}
 </style>
 </head>
@@ -74,7 +207,9 @@ label{display:block;color:#d6eaff}
 </div>
 
 <h2>Select Your Analysis</h2>
+
 <div class="grid">
+
 <div class="card choice" onclick="openPhysical()">
 <div class="big">🫀</div>
 <h2>Physical Healthness</h2>
@@ -88,7 +223,9 @@ label{display:block;color:#d6eaff}
 <p class="small">Complete wellbeing check-ins and explore trends.</p>
 <button>Open Mental Health</button>
 </div>
+
 </div>
+
 <button class="secondary" onclick="logout()">Logout</button>
 </section>
 
@@ -99,80 +236,142 @@ label{display:block;color:#d6eaff}
 <p class="small">Enter readings to review them against general reference ranges.</p>
 
 <form id="physicalForm">
+
 <div class="grid">
-<div><label>Heart Rate (BPM)</label><input type="number" id="heartRate" min="20" max="250" required></div>
-<div><label>SpO₂ (%)</label><input type="number" id="spo2" min="50" max="100" required></div>
-<div><label>Temperature (°C)</label><input type="number" id="temperature" min="30" max="45" step=".1" required></div>
-<div><label>Systolic Blood Pressure (mmHg)</label><input type="number" id="systolic" min="50" max="250" required></div>
-<div><label>Diastolic Blood Pressure (mmHg)</label><input type="number" id="diastolic" min="30" max="150" required></div>
-<div><label>Sleep Duration (hours)</label><input type="number" id="sleep" min="0" max="24" step=".5" required></div>
-<div><label>Fatigue Level</label>
-<select id="fatigue"><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option></select></div>
-<div><label>Stress Level</label>
-<select id="physicalStress"><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option></select></div>
-<div><label>Symptoms</label>
-<select id="symptoms">
-<option value="none">None</option><option value="headache">Headache</option>
-<option value="dizziness">Dizziness</option><option value="nausea">Nausea</option>
-<option value="breathing">Breathing difficulty</option>
-<option value="chest">Chest discomfort</option><option value="other">Other</option>
-</select></div>
+
+<div>
+<label>Heart Rate (BPM)</label>
+<input type="number" id="heartRate" min="20" max="250" required>
 </div>
+
+<div>
+<label>SpO₂ (%)</label>
+<input type="number" id="spo2" min="50" max="100" required>
+</div>
+
+<div>
+<label>Temperature (°C)</label>
+<input type="number" id="temperature" min="30" max="45" step=".1" required>
+</div>
+
+<div>
+<label>Systolic Blood Pressure (mmHg)</label>
+<input type="number" id="systolic" min="50" max="250" required>
+</div>
+
+<div>
+<label>Diastolic Blood Pressure (mmHg)</label>
+<input type="number" id="diastolic" min="30" max="150" required>
+</div>
+
+<div>
+<label>Sleep Duration (hours)</label>
+<input type="number" id="sleep" min="0" max="24" step=".5" required>
+</div>
+
+<div>
+<label>Fatigue Level</label>
+<select id="fatigue">
+<option value="low">Low</option>
+<option value="moderate">Moderate</option>
+<option value="high">High</option>
+</select>
+</div>
+
+<div>
+<label>Stress Level</label>
+<select id="physicalStress">
+<option value="low">Low</option>
+<option value="moderate">Moderate</option>
+<option value="high">High</option>
+</select>
+</div>
+
+<div>
+<label>Symptoms</label>
+<select id="symptoms">
+<option value="none">None</option>
+<option value="headache">Headache</option>
+<option value="dizziness">Dizziness</option>
+<option value="nausea">Nausea</option>
+<option value="breathing">Breathing difficulty</option>
+<option value="chest">Chest discomfort</option>
+<option value="other">Other</option>
+</select>
+</div>
+
+</div>
+
 <button type="submit">Analyse Physical Readings →</button>
 <button type="button" class="secondary" onclick="samplePhysical()">Load Sample Data</button>
 <button type="reset" class="secondary">Clear</button>
+
 </form>
 </div>
+
 <button class="secondary" onclick="showPage('aboutPage')">← Back to About</button>
 </section>
 
 <!-- MENTAL DATA PAGE -->
 <section id="mentalPage" class="page">
 <div class="card">
+
 <h2>🧠 Mental Wellbeing Check-in</h2>
-<p class="small">Complete the daily check-in. Use the same rating direction each day to make comparisons more meaningful.</p>
+
+<p class="small">
+Complete the daily check-in. Use the same rating direction each day to make comparisons more meaningful.
+</p>
 
 <label>Check-in Date</label>
 <input type="date" id="checkDate">
 
 <div class="grid">
+
 <div>
 <label>😊 Mood Level (1–10)</label>
 <p class="small">1 = Very low, 10 = Very positive</p>
 <input type="range" id="mood" min="1" max="10" value="5" oninput="showRating('mood')">
 <output id="moodOutput">5</output>
 </div>
+
 <div>
 <label>😟 Stress Level (1–10)</label>
 <p class="small">1 = Very low, 10 = Very high</p>
 <input type="range" id="stress" min="1" max="10" value="5" oninput="showRating('stress')">
 <output id="stressOutput">5</output>
 </div>
+
 <div>
 <label>👥 Isolation Level (1–10)</label>
 <p class="small">1 = Not isolated, 10 = Very isolated</p>
 <input type="range" id="isolation" min="1" max="10" value="5" oninput="showRating('isolation')">
 <output id="isolationOutput">5</output>
 </div>
+
 <div>
 <label>🎯 Concentration Level (1–10)</label>
 <p class="small">1 = Very difficult, 10 = Very focused</p>
 <input type="range" id="concentration" min="1" max="10" value="5" oninput="showRating('concentration')">
 <output id="concentrationOutput">5</output>
 </div>
+
 </div>
 
 <button onclick="analyseMental()">Analyse Mental Wellbeing →</button>
 <button class="secondary" onclick="sampleMental()">Load Sample Data</button>
+
 </div>
+
 <button class="secondary" onclick="showPage('aboutPage')">← Back to About</button>
 </section>
 
 <!-- ANALYSIS PAGE -->
 <section id="analysisPage" class="page">
 <div class="card">
+
 <h2>🔍 OrbitCare Analysis</h2>
 <p id="analysisHeading" class="small"></p>
+
 <div id="analysisSummary"></div>
 
 <h3>Analysis Results</h3>
@@ -181,18 +380,26 @@ label{display:block;color:#d6eaff}
 <div class="result">
 <h3>What would you like to do next?</h3>
 <p>Would you like OrbitCare to suggest some supportive ways to improve your wellbeing?</p>
+
 <button onclick="openRecovery()">💡 Suggest Ways to Recover</button>
 <button class="secondary" onclick="goToReport()">Skip → Go to Report</button>
 </div>
+
 </div>
+
 <button class="secondary" onclick="backToData()">← Back to Data Entry</button>
 </section>
 
 <!-- RECOVERY SUGGESTIONS PAGE -->
 <section id="recoveryPage" class="page">
 <div class="card">
+
 <h2>💡 Support & Recovery Suggestions</h2>
-<p class="small">These suggestions are based on the readings you entered. They are general wellbeing ideas, not medical treatment.</p>
+
+<p class="small">
+These suggestions are based on the readings you entered. They are general wellbeing ideas, not medical treatment.
+</p>
+
 <div id="recoveryContent"></div>
 
 <div class="result">
@@ -201,12 +408,15 @@ label{display:block;color:#d6eaff}
 </div>
 
 <button onclick="goToReport()">Continue to Health Report →</button>
+
 </div>
+
 <button class="secondary" onclick="showPage('analysisPage')">← Back to Analysis</button>
 </section>
 
 <!-- REPORT PAGE -->
 <section id="reportPage" class="page">
+
 <div class="card">
 <h2>📄 OrbitCare Health Report</h2>
 <div id="reportContent"></div>
@@ -224,6 +434,7 @@ label{display:block;color:#d6eaff}
 </div>
 
 <button class="secondary" onclick="showPage('aboutPage')">← Back to Home</button>
+
 </section>
 
 </main>
@@ -233,6 +444,7 @@ label{display:block;color:#d6eaff}
 </footer>
 
 <script>
+
 let currentName="";
 let currentType="";
 let lastPhysical=null;
@@ -251,13 +463,19 @@ function showPage(id){
 }
 
 function login(){
+
  const name=document.getElementById("astronautName").value.trim();
+
  if(!name){
   document.getElementById("loginError").textContent="Please enter your name.";
   return;
  }
+
  currentName=name;
- document.getElementById("welcomeText").textContent="Welcome, "+name+". Select your health monitoring section.";
+
+ document.getElementById("welcomeText").textContent=
+ "Welcome, "+name+". Select your health monitoring section.";
+
  showPage("aboutPage");
 }
 
@@ -286,6 +504,7 @@ function backToData(){
 /* PHYSICAL DATA */
 
 function samplePhysical(){
+
  document.getElementById("heartRate").value=75;
  document.getElementById("spo2").value=98;
  document.getElementById("temperature").value=37;
@@ -295,9 +514,11 @@ function samplePhysical(){
  document.getElementById("fatigue").value="low";
  document.getElementById("physicalStress").value="low";
  document.getElementById("symptoms").value="none";
+
 }
 
 function physicalData(){
+
  return {
   heartRate:+document.getElementById("heartRate").value,
   spo2:+document.getElementById("spo2").value,
@@ -309,27 +530,40 @@ function physicalData(){
   stress:document.getElementById("physicalStress").value,
   symptoms:document.getElementById("symptoms").value
  };
+
 }
 
 document.getElementById("physicalForm").addEventListener("submit",function(e){
+
  e.preventDefault();
+
  lastPhysical=physicalData();
  currentType="physical";
  recoverySelected=false;
+
  analysePhysical(lastPhysical);
+
 });
 
 function analysePhysical(d){
+
  currentFlags=[];
  currentSuggestions=[];
 
  const ranges=[
+
   ["Heart Rate",d.heartRate+" BPM","60–100 BPM",d.heartRate>=60&&d.heartRate<=100],
+
   ["SpO₂",d.spo2+"%","95–100%",d.spo2>=95],
+
   ["Temperature",d.temperature+" °C","36.1–37.2 °C",d.temperature>=36.1&&d.temperature<=37.2],
+
   ["Systolic BP",d.systolic+" mmHg","90–120 mmHg",d.systolic>=90&&d.systolic<=120],
+
   ["Diastolic BP",d.diastolic+" mmHg","60–80 mmHg",d.diastolic>=60&&d.diastolic<=80],
+
   ["Sleep",d.sleep+" hours","Individual needs vary",d.sleep>=7&&d.sleep<=9]
+
  ];
 
  ranges.forEach(r=>{
@@ -341,42 +575,66 @@ function analysePhysical(d){
  if(d.symptoms!=="none")currentFlags.push("Reported symptom: "+d.symptoms+".");
 
  if(d.sleep<7)currentSuggestions.push("Consider discussing your sleep routine and rest opportunities with the mission medical team.");
+
  if(d.fatigue==="high")currentSuggestions.push("Consider a suitable rest period and discuss persistent fatigue with the medical team.");
+
  if(d.stress==="high")currentSuggestions.push("Consider a quiet break, a relaxation activity or a conversation with a trusted crew member.");
+
  if(d.symptoms!=="none")currentSuggestions.push("Please report symptoms to a qualified medical professional or mission medical officer.");
+
  if(!currentSuggestions.length)currentSuggestions.push("Continue following your established rest, hydration and wellbeing routines.");
 
- document.getElementById("analysisHeading").textContent="Physical Health Analysis for "+currentName;
+ document.getElementById("analysisHeading").textContent=
+ "Physical Health Analysis for "+currentName;
 
  document.getElementById("analysisSummary").innerHTML=
  `<div class="result">Your physical readings have been analysed.</div>`;
 
  document.getElementById("analysisDetails").innerHTML=
- `<table><tr><th>Measurement</th><th>Your Reading</th><th>General Reference</th><th>Review</th></tr>`+
- ranges.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]?"Within range":"Review"}</td></tr>`).join("")+
+ `<table>
+ <tr>
+ <th>Measurement</th>
+ <th>Your Reading</th>
+ <th>General Reference</th>
+ <th>Review</th>
+ </tr>`+
+ ranges.map(r=>
+ `<tr>
+ <td>${r[0]}</td>
+ <td>${r[1]}</td>
+ <td>${r[2]}</td>
+ <td>${r[3]?"Within range":"Review"}</td>
+ </tr>`
+ ).join("")+
  `</table>`+
  (currentFlags.length?
  currentFlags.map(f=>`<div class="result warning">${safe(f)}</div>`).join("") :
  `<div class="result good">No values outside the displayed general reference ranges were identified.</div>`);
 
  showPage("analysisPage");
+
 }
 
 /* MENTAL DATA */
 
 function showRating(id){
- document.getElementById(id+"Output").textContent=document.getElementById(id).value;
+ document.getElementById(id+"Output").textContent=
+ document.getElementById(id).value;
 }
 
 function sampleMental(){
+
  document.getElementById("mood").value=7;
  document.getElementById("stress").value=3;
  document.getElementById("isolation").value=4;
  document.getElementById("concentration").value=8;
+
  ["mood","stress","isolation","concentration"].forEach(showRating);
+
 }
 
 function mentalData(){
+
  return {
   date:document.getElementById("checkDate").value,
   mood:+document.getElementById("mood").value,
@@ -384,12 +642,17 @@ function mentalData(){
   isolation:+document.getElementById("isolation").value,
   concentration:+document.getElementById("concentration").value
  };
+
 }
 
 function getHistory(){
+
  try{
   return JSON.parse(localStorage.getItem("orbitcareMentalHistory_"+currentName)||"[]");
- }catch(e){return [];}
+ }catch(e){
+  return [];
+ }
+
 }
 
 function saveHistory(history){
@@ -397,15 +660,27 @@ function saveHistory(history){
 }
 
 function calculateWellness(d){
- const score=(d.mood+(11-d.stress)+(11-d.isolation)+d.concentration)/4*10;
+
+ const score=
+ (d.mood+(11-d.stress)+(11-d.isolation)+d.concentration)/4*10;
+
  return Math.round(score);
+
 }
 
 function analyseMental(){
- if(!currentName){alert("Please log in first.");return;}
+
+ if(!currentName){
+  alert("Please log in first.");
+  return;
+ }
 
  const d=mentalData();
- if(!d.date){alert("Please select a check-in date.");return;}
+
+ if(!d.date){
+  alert("Please select a check-in date.");
+  return;
+ }
 
  lastMental=d;
  currentType="mental";
@@ -414,25 +689,39 @@ function analyseMental(){
  currentSuggestions=[];
 
  if(d.mood<=4)currentInsights.push("Mood rating is on the lower side today.");
+
  if(d.stress>=7)currentInsights.push("A high stress rating was reported.");
+
  if(d.isolation>=7)currentInsights.push("A high isolation rating was reported.");
+
  if(d.concentration<=4)currentInsights.push("Concentration was reported as difficult.");
 
- if(!currentInsights.length)currentInsights.push("No high-priority patterns were identified in today's ratings.");
+ if(!currentInsights.length){
+  currentInsights.push("No high-priority patterns were identified in today's ratings.");
+ }
 
  if(d.stress>=6)currentSuggestions.push("Consider a short relaxation or breathing break.");
+
  if(d.isolation>=6)currentSuggestions.push("Consider connecting with a trusted crew member.");
+
  if(d.mood<=5)currentSuggestions.push("Consider a pleasant activity or a supportive conversation.");
+
  if(d.concentration<=5)currentSuggestions.push("Consider a short break before returning to demanding tasks.");
- if(!currentSuggestions.length)currentSuggestions.push("Continue healthy routines, rest and regular crew communication.");
+
+ if(!currentSuggestions.length){
+  currentSuggestions.push("Continue healthy routines, rest and regular crew communication.");
+ }
 
  let history=getHistory();
+
  history=history.filter(x=>x.date!==d.date);
  history.push(d);
  history.sort((a,b)=>a.date.localeCompare(b.date));
+
  saveHistory(history);
 
- document.getElementById("analysisHeading").textContent="Mental Wellbeing Analysis for "+currentName;
+ document.getElementById("analysisHeading").textContent=
+ "Mental Wellbeing Analysis for "+currentName;
 
  document.getElementById("analysisSummary").innerHTML=
  `<div class="result">Check-in recorded for ${safe(currentName)} on ${safe(d.date)}.</div>
@@ -442,11 +731,13 @@ function analyseMental(){
  currentInsights.map(x=>`<div class="result warning">${safe(x)}</div>`).join("");
 
  showPage("analysisPage");
+
 }
 
 /* RECOVERY PAGE */
 
 function openRecovery(){
+
  recoverySelected=true;
 
  document.getElementById("recoveryContent").innerHTML=
@@ -455,6 +746,7 @@ function openRecovery(){
  ).join("");
 
  showPage("recoveryPage");
+
 }
 
 /* REPORT PAGE */
@@ -465,6 +757,7 @@ function goToReport(){
 }
 
 function buildReport(){
+
  const box=document.getElementById("reportContent");
  const graphCard=document.getElementById("reportGraphCard");
  const historyCard=document.getElementById("reportHistoryCard");
@@ -472,7 +765,9 @@ function buildReport(){
  let html=`<p><strong>Astronaut:</strong> ${safe(currentName)}</p>`;
 
  if(currentType==="physical"&&lastPhysical){
+
   const d=lastPhysical;
+
   html+=`
   <h3>Physical Health Readings</h3>
   <table>
@@ -492,17 +787,23 @@ function buildReport(){
   `;
 
   if(recoverySelected){
+
    html+=`<h3>Support Suggestions</h3>`+
    currentSuggestions.map(s=>`<div class="result good">${safe(s)}</div>`).join("");
+
   }
 
   graphCard.classList.remove("hidden");
   historyCard.classList.add("hidden");
+
   drawPhysicalChart(d);
+
  }
 
  if(currentType==="mental"&&lastMental){
+
   const d=lastMental;
+
   html+=`
   <p><strong>Check-in Date:</strong> ${safe(d.date)}</p>
   <h3>Mental Wellbeing Ratings</h3>
@@ -520,49 +821,83 @@ function buildReport(){
   `;
 
   if(recoverySelected){
+
    html+=`<h3>Support Suggestions</h3>`+
    currentSuggestions.map(s=>`<div class="result good">${safe(s)}</div>`).join("");
+
   }
 
   graphCard.classList.remove("hidden");
   historyCard.classList.remove("hidden");
 
   const history=getHistory();
+
   drawMentalChart(history);
   renderHistory(history);
+
  }
 
  html+=`<p class="small">Generated by OrbitCare.</p>`;
+
  box.innerHTML=html;
+
 }
 
 /* GRAPHS */
 
 function drawPhysicalChart(d){
+
  const c=document.getElementById("reportChart");
  const ctx=c.getContext("2d");
+
  ctx.clearRect(0,0,c.width,c.height);
 
- const values=[d.heartRate,d.spo2,d.temperature,d.systolic,d.diastolic,d.sleep];
- const labels=["Heart","SpO2","Temp","Systolic","Diastolic","Sleep"];
+ const values=[
+  d.heartRate,
+  d.spo2,
+  d.temperature,
+  d.systolic,
+  d.diastolic,
+  d.sleep
+ ];
+
+ const labels=[
+  "Heart",
+  "SpO2",
+  "Temp",
+  "Systolic",
+  "Diastolic",
+  "Sleep"
+ ];
+
  const max=Math.max(...values)*1.2;
  const bar=75,gap=55;
 
  values.forEach((v,i)=>{
-  let h=(v/max)*190,x=35+i*(bar+gap);
+
+  let h=(v/max)*190;
+  let x=35+i*(bar+gap);
+
   ctx.fillStyle="#62d9ff";
   ctx.fillRect(x,215-h,bar,h);
+
   ctx.fillStyle="#ffffff";
   ctx.font="13px Arial";
+
   ctx.fillText(labels[i],x,240);
   ctx.fillText(String(v),x,205-h);
+
  });
+
 }
 
 function drawMentalChart(history){
+
  const c=document.getElementById("reportChart");
  const ctx=c.getContext("2d");
+
  ctx.clearRect(0,0,c.width,c.height);
+
  if(!history.length)return;
 
  const metrics=[
@@ -573,8 +908,10 @@ function drawMentalChart(history){
  ];
 
  const left=55,top=25,width=800,height=220;
+
  ctx.strokeStyle="#45627e";
  ctx.lineWidth=1;
+
  ctx.beginPath();
  ctx.moveTo(left,top);
  ctx.lineTo(left,top+height);
@@ -582,19 +919,25 @@ function drawMentalChart(history){
  ctx.stroke();
 
  for(let n=1;n<=10;n++){
+
   let y=top+height-(n/10)*height;
+
   ctx.fillStyle="#dcecff";
   ctx.font="12px Arial";
   ctx.fillText(n,left-20,y+4);
+
  }
 
  metrics.forEach(m=>{
+
   ctx.beginPath();
   ctx.strokeStyle=m[1];
   ctx.lineWidth=3;
 
   history.forEach((d,i)=>{
+
    let x=left+(history.length===1?width/2:i/(history.length-1)*width);
+
    let value=d[m[0].toLowerCase()];
    let y=top+height-(value/10)*height;
 
@@ -603,19 +946,26 @@ function drawMentalChart(history){
 
    ctx.fillStyle=m[1];
    ctx.fillRect(x-3,y-3,6,6);
+
   });
 
   ctx.stroke();
+
  });
 
  ctx.font="13px Arial";
+
  metrics.forEach((m,i)=>{
+
   ctx.fillStyle=m[1];
   ctx.fillText(m[0],left+i*130,top+height+30);
+
  });
+
 }
 
 function renderHistory(history){
+
  const rows=history.slice().reverse().map(d=>`
  <tr>
  <td>${safe(d.date)}</td>
@@ -628,25 +978,41 @@ function renderHistory(history){
 
  document.getElementById("historyTable").innerHTML=
  `<table>
- <tr><th>Date</th><th>Mood</th><th>Stress</th><th>Isolation</th><th>Concentration</th><th>Wellness</th></tr>
- ${rows}</table>`;
+ <tr>
+ <th>Date</th>
+ <th>Mood</th>
+ <th>Stress</th>
+ <th>Isolation</th>
+ <th>Concentration</th>
+ <th>Wellness</th>
+ </tr>
+ ${rows}
+ </table>`;
+
 }
 
 function clearHistory(){
+
  if(confirm("Delete all saved mental check-ins for this astronaut on this browser?")){
+
   localStorage.removeItem("orbitcareMentalHistory_"+currentName);
+
   document.getElementById("historyTable").innerHTML="No saved check-ins.";
+
  }
+
 }
 
 /* REPORT PRINTING */
 
 function printReport(){
+
  const report=document.getElementById("reportContent").innerHTML;
  const chart=document.getElementById("reportChart");
  const chartImage=chart.toDataURL("image/png");
 
  const w=window.open("","_blank");
+
  if(!w){
   alert("Allow pop-ups to print your report.");
   return;
@@ -679,18 +1045,23 @@ function printReport(){
  </html>`);
 
  w.document.close();
+
 }
 
 /* SAFE TEXT DISPLAY */
 
 function safe(value){
+
  return String(value).replace(/[&<>"']/g,c=>({
+
   "&":"&amp;",
   "<":"&lt;",
   ">":"&gt;",
   '"':"&quot;",
   "'":"&#39;"
+
  }[c]));
+
 }
 
 /* INITIAL DATE */
@@ -702,4 +1073,3 @@ document.getElementById("checkDate").value=
 
 </body>
 </html>
-
