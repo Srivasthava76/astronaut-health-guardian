@@ -169,19 +169,18 @@ label{display:block;color:#d6eaff}
 <div class="fieldBlock">
 <label for="physicalEnvironment">Where are you measuring from?</label>
 <select id="physicalEnvironment" required>
-<option value="Earth">🌍 Earth</option>
 <option value="Spacecraft">🚀 Spacecraft</option>
 <option value="Space Station">🛰️ Space Station</option>
+<option value="Earth">🌍 Earth</option>
 <option value="Moon">🌕 Moon</option>
 <option value="Mars">🔴 Mars</option>
 <option value="Other Planetary Body">🪐 Other Planetary Body</option>
 <option value="Other">Other</option>
 </select>
-<p class="small">Select the environment where these readings are being collected. OrbitCare uses research-informed context; it does not assume separate validated medical ranges exist for every destination.</p>
+<p class="small">Select the environment where these readings are being collected.</p>
 </div>
 
-<form id="physicalForm" novalidate>
-<div id="physicalFormError" class="result alert hidden" role="alert" aria-live="polite"></div>
+<form id="physicalForm">
 <div class="grid">
 <div><label>Heart Rate (BPM)</label><input type="number" id="heartRate" min="20" max="250" required></div>
 <div><label>SpO₂ (%)</label><input type="number" id="spo2" min="50" max="100" required></div>
@@ -217,15 +216,15 @@ label{display:block;color:#d6eaff}
 
 <label for="mentalEnvironment">Where are you completing this check-in?</label>
 <select id="mentalEnvironment" required>
-<option value="Earth">🌍 Earth</option>
 <option value="Spacecraft">🚀 Spacecraft</option>
 <option value="Space Station">🛰️ Space Station</option>
+<option value="Earth">🌍 Earth</option>
 <option value="Moon">🌕 Moon</option>
 <option value="Mars">🔴 Mars</option>
 <option value="Other Planetary Body">🪐 Other Planetary Body</option>
 <option value="Other">Other</option>
 </select>
-<p class="small">Choose the location where this wellbeing check-in is being recorded. Environmental factors are discussed separately; self-report ratings are not artificially adjusted.</p>
+<p class="small">Choose the location where this wellbeing check-in is being recorded.</p>
 
 <label>Check-in Date</label>
 <input type="date" id="checkDate">
@@ -318,7 +317,29 @@ label{display:block;color:#d6eaff}
 <div id="historyTable"></div>
 </div>
 
+<button onclick="openHealthQuest()">Open Astronaut Health Quest →</button>
 <button class="secondary" onclick="showPage('aboutPage')">← Back to Home</button>
+</section>
+
+<!-- ASTRONAUT HEALTH QUEST: ISSUE-SPECIFIC SUPPORT, NOT STEP TRACKING -->
+<section id="healthQuestPage" class="page">
+ <div class="card">
+  <h2>🚀 Astronaut Health Quest</h2>
+  <p class="small">A focused action dashboard. Each item below connects an issue identified in your submitted data with a relevant, practical support action. It does not use step counts or exercise targets.</p>
+  <div id="questEnvironment" class="result"></div>
+  <div id="questIssueSolutions"></div>
+  <div class="card" id="questGameCard">
+   <h3>🏅 Mission Progress & Achievements</h3>
+   <p class="small">Earn points by reviewing your issue-specific support actions and recording a safe follow-up. Points reward engagement—not whether a health concern has disappeared.</p>
+   <div class="result"><strong>Total Quest Points:</strong> <span id="questPoints">0</span></div>
+   <div class="result"><strong>Actions reviewed:</strong> <span id="questProgress">0 / 0</span></div>
+   <div class="progress-track" style="height:14px;background:#263d58;border-radius:20px;overflow:hidden"><div id="questProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#42c9ff,#7d8cff);transition:width .3s"></div></div>
+   <h3>Unlocked Badges</h3><div id="questBadges" class="result">🚀 Mission Starter — complete your first support action to unlock.</div>
+   <p class="small">Each action can be marked reviewed once. This does not confirm that a medical issue is resolved. Progress is saved in this browser only.</p>
+  </div>
+  <div class="result warning"><strong>Safety note:</strong> These are general educational support ideas, not a diagnosis or treatment plan. Do not try to correct abnormal vital signs through exercise. Recheck readings when appropriate and contact the mission medical team or a qualified healthcare professional about concerning or persistent readings or symptoms.</div>
+  <button class="secondary" onclick="showPage('reportPage')">← Back to Health Report</button>
+ </div>
 </section>
 
 </main>
@@ -336,6 +357,9 @@ let currentInsights=[];
 let currentSuggestions=[];
 let currentFlags=[];
 let recoverySelected=false;
+let questItems=[];
+let questCompleted=JSON.parse(localStorage.getItem("orbitQuestCompleted")||"{}");
+let questPointsTotal=Number(localStorage.getItem("orbitQuestPoints")||0);
 
 const pages=document.querySelectorAll(".page");
 
@@ -378,70 +402,6 @@ function backToData(){
  showPage(currentType==="physical"?"physicalPage":"mentalPage");
 }
 
-/* ENVIRONMENT-AWARE RESEARCH CONTEXT
-   Clinical reference values below remain general screening references.
-   OrbitCare does NOT invent separate Moon/Mars/spaceflight medical cut-offs.
-*/
-const environmentProfiles={
- "Earth":{
-  title:"Earth environment",
-  factors:["Use the displayed general reference ranges as educational screening comparisons.","Daily activity, altitude, temperature, hydration and individual medical history can affect interpretation."],
-  physical:"The displayed ranges are general references, not an individual diagnosis.",
-  mental:"Use the ratings as a personal trend check. Stress, sleep, social support and life circumstances can influence responses.",
-  evidence:"Earth reference context"
- },
- "Spacecraft":{
-  title:"Spacecraft / spaceflight environment",
-  factors:["During spaceflight, especially in microgravity, body-fluid distribution and cardiovascular adaptation can change.","Mission workload, sleep schedules, confinement and separation from Earth may affect wellbeing.","Radiation and spacecraft environmental conditions are mission-level hazards; the entered vital signs do not measure radiation exposure."],
-  physical:"No validated universal spacecraft-specific cut-offs are available in this tool. General reference comparisons are shown for context only; mission medical teams use individual and mission-specific baselines.",
-  mental:"Confinement, workload, disrupted routines and distance from familiar support can be relevant context. Ratings are not automatically adjusted because no validated environment-specific scoring conversion is available.",
-  evidence:"NASA human-spaceflight risk research; microgravity physiology and behavioural health"
- },
- "Space Station":{
-  title:"Space station environment",
-  factors:["Long-duration orbital missions involve microgravity, which can affect fluid distribution, cardiovascular adaptation, muscles and bones.","Sleep and circadian schedules, workload and crew interaction are important wellbeing considerations.","Radiation exposure is a separate mission-environment measure and cannot be inferred from these health readings."],
-  physical:"No universal space-station-specific ranges for all listed measurements are implemented. General ranges are displayed without claiming they are validated ISS thresholds.",
-  mental:"Isolation and confinement, sleep/circadian disruption and crew support are relevant considerations. The wellness indicator remains a simple self-report summary, not a clinical or NASA-standard score.",
-  evidence:"NASA Human Research Program and NASA Human System Standard"
- },
- "Moon":{
-  title:"Lunar environment",
-  factors:["Lunar surface gravity is about one-sixth of Earth's; effects of partial gravity on long-term human health are still an active research area.","Surface missions also involve radiation, dust, suit operations, workload and habitat constraints.","Mission isolation and distance from Earth may affect communication and access to support."],
-  physical:"There are no established, universal lunar-surface medical cut-offs for the listed readings in this educational tool. General reference comparisons are not lunar-specific medical standards.",
-  mental:"Isolation, mission workload, communication constraints and unfamiliar operating conditions may matter. Ratings are kept unchanged and interpreted as self-reported trends.",
-  evidence:"NASA lunar exploration and human research risk material"
- },
- "Mars":{
-  title:"Mars mission / surface environment",
-  factors:["Mars gravity is about 0.38 g; the long-term health implications of partial gravity for humans remain uncertain.","A Mars mission may involve prolonged isolation, communication delays, confined habitats and limited immediate access to Earth-based support.","Radiation and habitat conditions require dedicated sensors and mission systems; they cannot be estimated from the entered vital signs."],
-  physical:"No validated, universal Mars-specific ranges for the listed measurements are available in this tool. General references are shown only as context, not as Mars medical standards.",
-  mental:"Long-duration isolation, communication delays, confinement and limited access to support are relevant mission considerations. No numerical score adjustment is applied because there is no validated conversion.",
-  evidence:"NASA human-spaceflight risk research and Mars mission research"
- },
- "Other Planetary Body":{
-  title:"Other planetary body",
-  factors:["Gravity, radiation, atmosphere, temperature and mission duration depend on the selected destination and may not be known.","The user should not assume Earth or another body's conditions apply to this destination."],
-  physical:"Destination-specific evidence has not been configured. General reference comparisons are shown only as broad educational context.",
-  mental:"Mission isolation and operational conditions depend on the destination. Self-report ratings are presented without an environment-specific score adjustment.",
-  evidence:"Destination-specific research required"
- },
- "Other":{
-  title:"Other / unspecified environment",
-  factors:["Environmental conditions have not been specified, so no destination-specific interpretation can be made."],
-  physical:"Only general educational reference comparisons are available.",
-  mental:"Only self-reported ratings and personal trends are available; no environment-specific interpretation can be made.",
-  evidence:"Environment not specified"
- }
-};
-function getEnvironmentProfile(environment){
- return environmentProfiles[environment]||environmentProfiles["Other"];
-}
-function environmentContextHTML(environment,kind){
- const p=getEnvironmentProfile(environment);
- const explanation=kind==="physical"?p.physical:p.mental;
- return `<div class="result warning"><strong>Environment-aware context: ${safe(p.title)}</strong><br>${safe(explanation)}<ul>${p.factors.map(x=>`<li>${safe(x)}</li>`).join("")}</ul><span class="small">Evidence category: ${safe(p.evidence)}. Context flags are not a diagnosis or a validated mission medical assessment.</span></div>`;
-}
-
 /* PHYSICAL DATA */
 
 function samplePhysical(){
@@ -471,87 +431,91 @@ function physicalData(){
  };
 }
 
-function runPhysicalAnalysis(){
- const errorBox=document.getElementById("physicalFormError");
- const requiredFields=[
-  {id:"heartRate",name:"Heart Rate",min:20,max:250},
-  {id:"spo2",name:"SpO₂",min:50,max:100},
-  {id:"temperature",name:"Temperature",min:30,max:45},
-  {id:"systolic",name:"Systolic Blood Pressure",min:50,max:250},
-  {id:"diastolic",name:"Diastolic Blood Pressure",min:30,max:150},
-  {id:"sleep",name:"Sleep Duration",min:0,max:24}
- ];
- const problems=[];
- requiredFields.forEach(field=>{
-  const input=document.getElementById(field.id);
-  const raw=input.value.trim();
-  const value=Number(raw);
-  if(raw==="") problems.push(field.name+" is required.");
-  else if(!Number.isFinite(value)) problems.push(field.name+" must be a valid number.");
-  else if(value<field.min||value>field.max) problems.push(field.name+" must be between "+field.min+" and "+field.max+".");
- });
- if(problems.length){
-  errorBox.innerHTML="<strong>Please correct the following before analysis:</strong><br>"+problems.map(x=>safe(x)).join("<br>");
-  errorBox.classList.remove("hidden");
-  errorBox.scrollIntoView({behavior:"smooth",block:"center"});
-  return false;
- }
- errorBox.classList.add("hidden");
- try{
-  lastPhysical=physicalData();
-  currentType="physical";
-  recoverySelected=false;
-  analysePhysical(lastPhysical);
-  return true;
- }catch(error){
-  console.error("OrbitCare physical analysis error:",error);
-  errorBox.textContent="Analysis could not finish: "+(error && error.message ? error.message : "Unknown error")+". Please check the entered values and try again.";
-  errorBox.classList.remove("hidden");
-  errorBox.scrollIntoView({behavior:"smooth",block:"center"});
-  return false;
- }
-}
-
-// Keep Enter-key submission working, while the visible button calls the same function directly.
 document.getElementById("physicalForm").addEventListener("submit",function(e){
  e.preventDefault();
- runPhysicalAnalysis();
+ lastPhysical=physicalData();
+ currentType="physical";
+ recoverySelected=false;
+ analysePhysical(lastPhysical);
 });
 
-function analysePhysical(d){
- currentFlags=[];
- currentSuggestions=[];
- const ranges=[
-  ["Heart Rate",d.heartRate+" BPM","60–100 BPM",d.heartRate>=60&&d.heartRate<=100],
-  ["SpO₂",d.spo2+"%","95–100%",d.spo2>=95],
-  ["Temperature",d.temperature+" °C","36.1–37.2 °C",d.temperature>=36.1&&d.temperature<=37.2],
-  ["Systolic BP",d.systolic+" mmHg","90–120 mmHg",d.systolic>=90&&d.systolic<=120],
-  ["Diastolic BP",d.diastolic+" mmHg","60–80 mmHg",d.diastolic>=60&&d.diastolic<=80],
-  ["Sleep",d.sleep+" hours","Individual needs vary",d.sleep>=7&&d.sleep<=9]
+/* Direct button handler: avoids browser form-validation blocking the analysis click. */
+function runPhysicalAnalysis(){
+ const requiredFields=[
+  ["heartRate","Heart Rate"],
+  ["spo2","SpO₂"],
+  ["temperature","Temperature"],
+  ["systolic","Systolic Blood Pressure"],
+  ["diastolic","Diastolic Blood Pressure"],
+  ["sleep","Sleep Duration"]
  ];
- ranges.forEach(r=>{if(!r[3])currentFlags.push(r[0]+" is outside the displayed general educational reference range.");});
- if(d.fatigue==="high")currentFlags.push("High fatigue was reported.");
- if(d.stress==="high")currentFlags.push("High stress was reported.");
- if(d.symptoms!=="none")currentFlags.push("Reported symptom: "+d.symptoms+".");
- const p=getEnvironmentProfile(d.environment);
- if(d.environment==="Spacecraft"||d.environment==="Space Station")currentFlags.push("Microgravity-related physiological adaptation is relevant mission context; these entered readings cannot independently assess it.");
- if(d.environment==="Moon"||d.environment==="Mars")currentFlags.push("Partial-gravity effects on long-term human health remain an active research area; this tool does not apply unvalidated gravity-based medical adjustments.");
- if(d.environment==="Mars")currentFlags.push("Long-duration isolation and communication delay may be relevant operational context, but are not measured by these physical readings.");
- if(d.sleep<7)currentSuggestions.push("Review sleep opportunity and schedule with the mission medical team, especially if this pattern continues.");
- if(d.fatigue==="high")currentSuggestions.push("Consider an appropriate rest period and discuss persistent fatigue with the medical team.");
- if(d.stress==="high")currentSuggestions.push("Consider a quiet break, relaxation activity or conversation with a trusted crew member.");
- if(d.symptoms!=="none")currentSuggestions.push("Report symptoms to a qualified medical professional or mission medical officer. Seek urgent help for severe or rapidly worsening symptoms.");
- if(!currentSuggestions.length)currentSuggestions.push("Continue established rest, hydration and wellbeing routines and compare future readings with your own baseline.");
- document.getElementById("analysisHeading").textContent="Physical Health Analysis for "+currentName+" | Selected environment: "+d.environment;
- document.getElementById("analysisSummary").innerHTML=
-  `<div class="result">Readings recorded for <strong>${safe(currentName)}</strong>.<br><strong>Selected environment:</strong> ${safe(d.environment)}</div>`+
-  environmentContextHTML(d.environment,"physical");
- document.getElementById("analysisDetails").innerHTML=
-  `<table><tr><th>Measurement</th><th>Your Reading</th><th>General Reference</th><th>Review</th></tr>`+
-  ranges.map(r=>`<tr><td>${safe(r[0])}</td><td>${safe(r[1])}</td><td>${safe(r[2])}</td><td>${r[3]?"Within displayed range":"Review"}</td></tr>`).join("")+`</table>`+
-  `<div class="result warning"><strong>How to read this table:</strong> The numerical ranges are general educational references, not environment-specific standards. OrbitCare does not claim that they are validated medical limits for spacecraft, the ISS, the Moon or Mars.</div>`+
-  (currentFlags.length?currentFlags.map(f=>`<div class="result warning">${safe(f)}</div>`).join(""):`<div class="result good">No values outside the displayed general reference ranges were identified. This does not establish that all aspects of health are normal.</div>`);
- showPage("analysisPage");
+ const missing=requiredFields.filter(([id])=>{
+  const el=document.getElementById(id);
+  return !el || el.value.trim()==="" || !Number.isFinite(Number(el.value));
+ });
+ if(missing.length){
+  alert("Please enter a valid number for: "+missing.map(x=>x[1]).join(", ")+".");
+  if(missing[0]) document.getElementById(missing[0][0]).focus();
+  return;
+ }
+ lastPhysical=physicalData();
+ currentType="physical";
+ recoverySelected=false;
+ analysePhysical(lastPhysical);
+}
+
+function analysePhysical(d){
+ try {
+  currentFlags=[];
+  currentSuggestions=[];
+
+  const measurements=[
+   {name:"Heart Rate",value:d.heartRate,unit:"BPM",range:"60–100 BPM",ok:d.heartRate>=60&&d.heartRate<=100,advice:"Recheck after resting and note the measurement conditions. If it remains unusual or you feel unwell, contact a qualified medical professional or mission medical officer."},
+   {name:"Blood Oxygen (SpO₂)",value:d.spo2,unit:"%",range:"95–100% (general reference)",ok:d.spo2>=95,advice:"Repeat the measurement according to the device instructions. A low or persistent unusual reading needs prompt assessment by qualified medical staff; do not try to correct it with exercise."},
+   {name:"Body Temperature",value:d.temperature,unit:"°C",range:"36.1–37.2 °C (general reference)",ok:d.temperature>=36.1&&d.temperature<=37.2,advice:"Recheck using the same reliable method. If unusual or accompanied by symptoms, contact qualified medical staff."},
+   {name:"Systolic Blood Pressure",value:d.systolic,unit:"mmHg",range:"90–120 mmHg (general reference)",ok:d.systolic>=90&&d.systolic<=120,advice:"Repeat the measurement after a quiet rest, following the monitor instructions. Discuss repeated unusual readings with qualified medical staff."},
+   {name:"Diastolic Blood Pressure",value:d.diastolic,unit:"mmHg",range:"60–80 mmHg (general reference)",ok:d.diastolic>=60&&d.diastolic<=80,advice:"Repeat the measurement after a quiet rest, following the monitor instructions. Discuss repeated unusual readings with qualified medical staff."},
+   {name:"Sleep Duration",value:d.sleep,unit:"hours",range:"7–9 hours (general adult reference; individual needs vary)",ok:d.sleep>=7&&d.sleep<=9,advice:"Review sleep timing, light exposure and rest opportunities with the mission team. Individual sleep needs and mission schedules vary."}
+  ];
+
+  const numeric=measurements.every(m=>Number.isFinite(Number(m.value)));
+  if(!numeric) throw new Error("One or more numeric readings are missing or invalid. Please return to the form and enter every required value.");
+
+  measurements.forEach(m=>{
+   if(!m.ok){
+    currentFlags.push(m.name+" is outside the displayed general reference range.");
+    currentSuggestions.push(m.name+": "+m.advice);
+   }
+  });
+  if(d.fatigue==="high"){
+   currentFlags.push("High fatigue was reported.");
+   currentSuggestions.push("Fatigue: consider an appropriate rest opportunity and report persistent or worsening fatigue to the mission medical team.");
+  }
+  if(d.stress==="high"){
+   currentFlags.push("High stress was reported.");
+   currentSuggestions.push("Stress: consider a quiet break, a relaxation activity, or a supportive conversation with a trusted crew member.");
+  }
+  if(d.symptoms!=="none"){
+   currentFlags.push("Reported symptom: "+d.symptoms+".");
+   currentSuggestions.push("Symptoms: report this symptom to a qualified healthcare professional or mission medical officer. Seek prompt help for breathing difficulty, chest discomfort, fainting, or severe/worsening symptoms.");
+  }
+  if(!currentSuggestions.length) currentSuggestions.push("No readings were outside the displayed general reference ranges and no additional concern was selected. Continue established mission health routines and follow your medical team's guidance.");
+
+  const env=String(d.environment||"Not specified");
+  document.getElementById("analysisHeading").textContent="Physical Health Analysis for "+(currentName||"Astronaut")+" | Measurement location: "+env;
+  document.getElementById("analysisSummary").innerHTML=
+   `<div class="result">Physical readings analysed successfully.<br><strong>Measurement location:</strong> ${safe(env)}<br><strong>Measurements reviewed:</strong> ${measurements.length}</div>`;
+  document.getElementById("analysisDetails").innerHTML=
+   `<h3>Reading-by-reading assessment</h3><div style="overflow-x:auto"><table><thead><tr><th>Measurement</th><th>Your Reading</th><th>General Reference</th><th>Result</th></tr></thead><tbody>`+
+   measurements.map(m=>`<tr><td>${safe(m.name)}</td><td>${safe(m.value)} ${safe(m.unit)}</td><td>${safe(m.range)}</td><td>${m.ok?'<span class="good">Within displayed range</span>':'<span class="warning">Review reading</span>'}</td></tr>`).join("")+`</tbody></table></div>`+
+   `<h3>Additional observations</h3>`+
+   (currentFlags.length?currentFlags.map(f=>`<div class="result warning">${safe(f)}</div>`).join(""):`<div class="result good">No values outside the displayed general reference ranges were identified from the entered data.</div>`)+
+   `<div class="result"><strong>Environment context — ${safe(env)}:</strong> The selected location is recorded in this assessment. These general reference values are not environment-specific astronaut limits. OrbitCare does not invent separate clinical thresholds for the Moon, Mars, spacecraft or space stations.</div>`;
+  showPage("analysisPage");
+ } catch(err) {
+  console.error("OrbitCare physical analysis error:",err);
+  alert("Physical analysis could not be completed: "+err.message);
+ }
 }
 
 /* MENTAL DATA */
@@ -596,32 +560,44 @@ function calculateWellness(d){
 
 function analyseMental(){
  if(!currentName){alert("Please log in first.");return;}
+
  const d=mentalData();
  if(!d.date){alert("Please select a check-in date.");return;}
- lastMental=d; currentType="mental"; recoverySelected=false; currentInsights=[]; currentSuggestions=[];
+
+ lastMental=d;
+ currentType="mental";
+ recoverySelected=false;
+ currentInsights=[];
+ currentSuggestions=[];
+
  if(d.mood<=4)currentInsights.push("Mood rating is on the lower side today.");
  if(d.stress>=7)currentInsights.push("A high stress rating was reported.");
  if(d.isolation>=7)currentInsights.push("A high isolation rating was reported.");
  if(d.concentration<=4)currentInsights.push("Concentration was reported as difficult.");
- const p=getEnvironmentProfile(d.environment);
- if(d.environment==="Spacecraft"||d.environment==="Space Station")currentInsights.push("Microgravity missions can involve changes to routines, sleep and crew operations; this check-in does not measure physiological or mission-system factors.");
- if(d.environment==="Moon")currentInsights.push("Lunar missions may involve unfamiliar surface operations, partial gravity and distance from familiar support systems.");
- if(d.environment==="Mars")currentInsights.push("A Mars mission may involve prolonged isolation, confinement and communication delays; these are contextual considerations, not measured clinical findings.");
- if(d.environment==="Other Planetary Body")currentInsights.push("Destination-specific wellbeing factors are not configured. Interpret these ratings as self-reported observations only.");
- if(!currentInsights.length)currentInsights.push("No high-priority patterns were identified in today's self-reported ratings.");
+
+ if(!currentInsights.length)currentInsights.push("No high-priority patterns were identified in today's ratings.");
+
  if(d.stress>=6)currentSuggestions.push("Consider a short relaxation or breathing break.");
- if(d.isolation>=6)currentSuggestions.push("Consider connecting with a trusted crew member or support person.");
+ if(d.isolation>=6)currentSuggestions.push("Consider connecting with a trusted crew member.");
  if(d.mood<=5)currentSuggestions.push("Consider a pleasant activity or a supportive conversation.");
  if(d.concentration<=5)currentSuggestions.push("Consider a short break before returning to demanding tasks.");
- if((d.environment==="Spacecraft"||d.environment==="Space Station"||d.environment==="Moon"||d.environment==="Mars")&&d.isolation>=6)currentSuggestions.push("If available, use the mission's planned crew-support or psychological-support channels.");
- if(!currentSuggestions.length)currentSuggestions.push("Continue healthy routines, rest and regular communication with trusted people.");
- let history=getHistory(); history=history.filter(x=>x.date!==d.date); history.push(d); history.sort((a,b)=>a.date.localeCompare(b.date)); saveHistory(history);
- document.getElementById("analysisHeading").textContent="Mental Wellbeing Analysis for "+currentName+" | Selected environment: "+d.environment;
+ if(!currentSuggestions.length)currentSuggestions.push("Continue healthy routines, rest and regular crew communication.");
+
+ let history=getHistory();
+ history=history.filter(x=>x.date!==d.date);
+ history.push(d);
+ history.sort((a,b)=>a.date.localeCompare(b.date));
+ saveHistory(history);
+
+ document.getElementById("analysisHeading").textContent="Mental Wellbeing Analysis for "+currentName+" | Check-in location: "+d.environment;
+
  document.getElementById("analysisSummary").innerHTML=
-  `<div class="result">Check-in recorded for ${safe(currentName)} on ${safe(d.date)}.<br><strong>Selected environment:</strong> ${safe(d.environment)}</div>`+
-  `<div class="result good">Self-report Wellness Indicator: <strong>${calculateWellness(d)}/100</strong><br><span class="small">This is a simple arithmetic summary of the four ratings, not a clinical assessment or NASA-standard score.</span></div>`+
-  environmentContextHTML(d.environment,"mental");
- document.getElementById("analysisDetails").innerHTML=currentInsights.map(x=>`<div class="result warning">${safe(x)}</div>`).join("");
+ `<div class="result">Check-in recorded for ${safe(currentName)} on ${safe(d.date)}.</div>
+ <div class="result good">Wellness Indicator: <strong>${calculateWellness(d)}/100</strong></div>`;
+
+ document.getElementById("analysisDetails").innerHTML=
+ currentInsights.map(x=>`<div class="result warning">${safe(x)}</div>`).join("");
+
  showPage("analysisPage");
 }
 
@@ -656,7 +632,6 @@ function buildReport(){
   const d=lastPhysical;
   html+=`
   <p><strong>Measurement Location:</strong> ${safe(d.environment)}</p>
-  ${environmentContextHTML(d.environment,"physical")}
   <h3>Physical Health Readings</h3>
   <table>
   <tr><th>Measurement</th><th>Reading</th></tr>
@@ -689,7 +664,6 @@ function buildReport(){
   html+=`
   <p><strong>Check-in Date:</strong> ${safe(d.date)}</p>
   <p><strong>Check-in Location:</strong> ${safe(d.environment)}</p>
-  ${environmentContextHTML(d.environment,"mental")}
   <h3>Mental Wellbeing Ratings</h3>
   <table>
   <tr><th>Indicator</th><th>Rating</th></tr>
@@ -717,9 +691,71 @@ function buildReport(){
   renderHistory(history);
  }
 
- html+=`<p class="small"><strong>Scientific and safety note:</strong> OrbitCare uses the selected environment to add research-informed mission context to its analysis. It does not invent destination-specific medical thresholds or alter clinical cut-offs without validated evidence. Physical ranges shown are general educational references, and the mental wellness indicator is a simple self-report summary. Neither is a diagnosis, treatment recommendation, NASA-approved assessment or substitute for qualified medical/mission review.</p>
- <p class="small">Research starting points: <a href="https://www.nasa.gov/hrp/risks/" target="_blank" rel="noopener">NASA Human Research Program risks</a> · <a href="https://www.nasa.gov/reference/nasa-std-3001v1/" target="_blank" rel="noopener">NASA Human System Standard</a> · <a href="https://www.nasa.gov/humans-in-space/spaceflight-standard-measures-characterizing-how-humans-adapt-in-space/" target="_blank" rel="noopener">NASA Spaceflight Standard Measures</a>.</p>`;
+ html+=`<p class="small">Generated by OrbitCare. The selected location is recorded for context. The displayed reference ranges are general educational references and are not adjusted for spacecraft, space-station, lunar, Martian or other planetary environments. Actual interpretation requires mission-specific standards and qualified medical review.</p>`;
  box.innerHTML=html;
+}
+
+/* ASTRONAUT HEALTH QUEST — issue-to-solution mapping */
+function openHealthQuest(){
+ const env=(currentType==="physical"&&lastPhysical)?lastPhysical.environment:
+           (currentType==="mental"&&lastMental)?lastMental.environment:"Not selected";
+ document.getElementById("questEnvironment").innerHTML=
+  `<strong>Selected environment:</strong> ${safe(env)}<br><strong>Focus:</strong> Support actions for the issues identified in your latest analysis.`;
+ const items=[];
+ if(currentType==="physical"&&lastPhysical){
+  const d=lastPhysical;
+  if(d.heartRate<60||d.heartRate>100) items.push(["Heart rate outside the displayed general range","Pause strenuous activity, repeat the measurement after resting if appropriate, and share repeated or concerning readings with the mission medical team. Do not use exercise as a correction."]);
+  if(d.spo2<95) items.push(["Blood oxygen below the displayed general reference","Repeat the reading according to device instructions and promptly contact the mission medical team or a qualified healthcare professional, especially if symptoms are present. Do not attempt to fix this with exercise."]);
+  if(d.temperature<36.1||d.temperature>37.2) items.push(["Temperature outside the displayed general reference","Recheck with a reliable thermometer and report persistent unusual readings or feeling unwell to the mission medical team."]);
+  if(d.systolic<90||d.systolic>120||d.diastolic<60||d.diastolic>80) items.push(["Blood pressure outside the displayed general reference","Rest quietly and repeat the measurement using the device's correct procedure. Discuss repeated or concerning readings with the mission medical team."]);
+  if(d.sleep<7) items.push(["Sleep duration below the selected general reference","Plan a protected rest opportunity, keep a consistent sleep-wake routine where mission operations allow, and discuss ongoing sleep difficulty with the crew medical team."]);
+  if(d.fatigue==="high") items.push(["High fatigue reported","Prioritise an appropriate recovery break, review workload and sleep opportunities, and tell the mission medical team if fatigue persists or affects tasks."]);
+  if(d.stress==="high") items.push(["High stress reported","Try a brief guided breathing or relaxation break, reduce non-urgent task load where possible, and talk with a trusted crew member or support professional."]);
+  if(d.symptoms!=="none") items.push(["A symptom was reported: "+d.symptoms,"Record when it began and whether it changes, then report it to the mission medical team or a qualified healthcare professional. Follow their instructions rather than self-treating."]);
+ } else if(currentType==="mental"&&lastMental){
+  const d=lastMental;
+  if(d.mood<=4) items.push(["Lower mood rating","Choose a manageable pleasant activity and consider talking with a trusted crew member or mental-health support professional. Track whether this continues across check-ins."]);
+  if(d.stress>=7) items.push(["High stress rating","Try a short relaxation or grounding activity, identify one manageable next task, and seek crew or professional support if stress persists."]);
+  if(d.isolation>=7) items.push(["High isolation rating","Arrange a purposeful check-in with a crew member, family contact or mission support contact when communication is available."]);
+  if(d.concentration<=4) items.push(["Difficulty concentrating","Take a brief break if mission duties permit, reduce distractions, and return to one clearly defined task. Report persistent difficulty to the appropriate support team."]);
+ }
+ if(!items.length) items.push(["No specific concern was flagged by this analysis","Continue established mission health routines and regular check-ins. This does not guarantee that every health concern is absent."]);
+ questItems=items;
+ document.getElementById("questIssueSolutions").innerHTML=items.map((it,i)=>
+  `<div class="result ${i===0&&items.length>1?"warning":"good"}"><h3>${safe(it[0])}</h3><p>${safe(it[1])}</p><button class="quest-action-btn" onclick="completeQuestAction(${i})" ${questCompleted[questKey(i)]?"disabled":""}>${questCompleted[questKey(i)]?"✓ Reviewed (+10 pts)":"Mark support action reviewed (+10 pts)"}</button></div>`).join("");
+ updateQuestGame();
+ showPage("healthQuestPage");
+}
+
+
+function questKey(i){
+ const env=(currentType==="physical"&&lastPhysical)?lastPhysical.environment:(currentType==="mental"&&lastMental)?lastMental.environment:"unknown";
+ return [currentName||"astronaut",currentType,env,questItems[i]?.[0]||i].join("|");
+}
+function completeQuestAction(i){
+ const key=questKey(i);
+ if(questCompleted[key])return;
+ questCompleted[key]=true;
+ questPointsTotal+=10;
+ localStorage.setItem("orbitQuestCompleted",JSON.stringify(questCompleted));
+ localStorage.setItem("orbitQuestPoints",String(questPointsTotal));
+ const buttons=document.querySelectorAll(".quest-action-btn");
+ if(buttons[i]){buttons[i].disabled=true;buttons[i].textContent="✓ Reviewed (+10 pts)";}
+ updateQuestGame();
+}
+function updateQuestGame(){
+ const total=questItems.length;
+ const done=questItems.filter((_,i)=>!!questCompleted[questKey(i)]).length;
+ const points=document.getElementById("questPoints");
+ if(!points)return;
+ document.getElementById("questPoints").textContent=questPointsTotal;
+ document.getElementById("questProgress").textContent=`${done} / ${total}`;
+ document.getElementById("questProgressBar").style.width=(total?done/total*100:0)+"%";
+ const badges=[];
+ if(questPointsTotal>=10)badges.push("🚀 Mission Starter");
+ if(questPointsTotal>=50)badges.push("🛰️ Wellness Explorer");
+ if(questPointsTotal>=100)badges.push("🌟 Mission Support Champion");
+ document.getElementById("questBadges").textContent=badges.length?badges.join("  •  "):"No badges unlocked yet — review your first support action to earn Mission Starter.";
 }
 
 /* GRAPHS */
@@ -805,7 +841,6 @@ function renderHistory(history){
  const rows=history.slice().reverse().map(d=>`
  <tr>
  <td>${safe(d.date)}</td>
- <td>${safe(d.environment||"Not recorded")}</td>
  <td>${d.mood}</td>
  <td>${d.stress}</td>
  <td>${d.isolation}</td>
@@ -815,7 +850,7 @@ function renderHistory(history){
 
  document.getElementById("historyTable").innerHTML=
  `<table>
- <tr><th>Date</th><th>Environment</th><th>Mood</th><th>Isolation</th><th>Concentration</th><th>Wellness</th></tr>
+ <tr><th>Date</th><th>Mood</th><th>Stress</th><th>Isolation</th><th>Concentration</th><th>Wellness</th></tr>
  ${rows}</table>`;
 }
 
