@@ -13,12 +13,22 @@ html{min-height:100%;background:#050b18}
 body{
  margin:0;
  min-height:100vh;
- background:#07111f url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=85') center center/cover fixed no-repeat;
+ background:#07111f url('login-galaxy.jpg') center center/cover fixed no-repeat;
  color:#eaf5ff;
  font-family:Arial,sans-serif;
  position:relative;
  isolation:isolate;
 }
+
+/* SECOND PAGE BACKGROUND */
+body:has(#aboutPage.active){
+ background-image:url("about-space.jpg");
+ background-position:center center;
+ background-size:cover;
+ background-attachment:fixed;
+ background-repeat:no-repeat;
+}
+
 body::before{
  content:"";
  position:fixed;
@@ -34,9 +44,124 @@ main{max-width:1050px;margin:25px auto;padding:15px}
 .page{display:none}
 .page.active{display:block}
 .card{background:rgba(16,39,68,.91);backdrop-filter:blur(7px);border:1px solid rgba(98,217,255,.28);border-radius:14px;padding:22px;margin:18px 0}
+
+/* LOGIN SCREEN */
+body:has(#loginPage.active) header,
+body:has(#loginPage.active) footer{display:none}
+body:has(#loginPage.active) main{
+ max-width:none;
+ min-height:100vh;
+ margin:0;
+ padding:clamp(18px,4vw,60px);
+ display:flex;
+ align-items:center
+}
+#loginPage.active{width:100%}
+.login-layout{
+ width:min(1450px,100%);
+ margin:auto;
+ display:grid;
+ grid-template-columns:1.12fr .88fr;
+ gap:clamp(25px,5vw,75px);
+ align-items:center
+}
+.login-brand{padding:clamp(10px,3vw,35px);text-shadow:0 2px 14px rgba(0,0,0,.8)}
+.login-brand h1{
+ font-size:clamp(42px,6vw,82px);
+ line-height:1;
+ margin:0 0 18px;
+ color:#fff;
+ letter-spacing:-2px
+}
+.login-brand h1 span{color:#19c9f4}
+.login-tagline{font-size:clamp(16px,2vw,25px);color:#e4f5ff;margin:0 0 28px}
+.login-divider{
+ height:3px;
+ width:min(560px,100%);
+ background:linear-gradient(90deg,transparent,#12cfff,transparent);
+ margin:28px 0
+}
+.login-features{display:grid;gap:18px;max-width:560px}
+.login-feature{display:flex;align-items:center;gap:17px;font-size:17px;color:#f1f8ff}
+.login-feature-icon{
+ width:54px;
+ height:54px;
+ flex:0 0 54px;
+ border:2px solid #13d5ff;
+ border-radius:50%;
+ display:grid;
+ place-items:center;
+ color:#26dfff;
+ font-size:27px;
+ box-shadow:0 0 18px rgba(19,213,255,.25)
+}
+.login-panel{
+ background:linear-gradient(145deg,rgba(4,28,69,.94),rgba(3,15,43,.91));
+ border:1px solid #13bfff;
+ border-radius:28px;
+ padding:clamp(25px,4vw,55px);
+ box-shadow:0 0 28px rgba(0,157,255,.32),inset 0 0 28px rgba(26,154,255,.08);
+ text-align:center;
+ backdrop-filter:blur(12px)
+}
+.login-panel h2{font-size:clamp(28px,3.4vw,43px);color:#fff;margin:0 0 12px}
+.login-panel .login-subtitle{color:#7ce8ff;font-size:17px;margin:0 0 30px}
+.login-panel label{text-align:left;font-weight:bold;margin:0 0 8px}
+.login-panel input{
+ background:rgba(2,20,49,.9);
+ border:1px solid #287bb5;
+ border-radius:13px;
+ padding:16px;
+ font-size:17px;
+ margin:0 0 18px
+}
+.login-continue{
+ width:100%;
+ padding:16px;
+ border-radius:30px;
+ background:linear-gradient(90deg,#087cf4,#16d3e9);
+ font-size:18px;
+ box-shadow:0 0 18px rgba(0,180,255,.28)
+}
+.login-continue:hover{filter:brightness(1.12)}
+.login-note{font-size:13px;color:#b8d8f2;margin:20px 0 0}
+
+@media(max-width:800px){
+ body:has(#loginPage.active) main{align-items:flex-start}
+ .login-layout{grid-template-columns:1fr;gap:10px}
+ .login-brand{text-align:center;padding:10px}
+ .login-brand h1{font-size:48px}
+ .login-divider{margin:18px auto}
+ .login-features{grid-template-columns:repeat(2,minmax(0,1fr));margin:auto;text-align:left}
+ .login-feature{font-size:14px;gap:9px}
+ .login-feature-icon{width:42px;height:42px;flex-basis:42px;font-size:21px}
+ .login-panel{max-width:560px;width:100%;margin:0 auto}
+}
+@media(max-width:420px){
+ .login-features{grid-template-columns:1fr}
+ .login-feature{justify-content:center}
+}
+
 h2,h3{color:#62d9ff}
-input,select{width:100%;padding:12px;margin:8px 0 15px;border-radius:8px;border:1px solid #496783;background:#071b30;color:white}
-button{background:#159bc5;color:white;border:0;padding:12px 19px;border-radius:8px;cursor:pointer;margin:5px;font-weight:bold}
+input,select{
+ width:100%;
+ padding:12px;
+ margin:8px 0 15px;
+ border-radius:8px;
+ border:1px solid #496783;
+ background:#071b30;
+ color:white
+}
+button{
+ background:#159bc5;
+ color:white;
+ border:0;
+ padding:12px 19px;
+ border-radius:8px;
+ cursor:pointer;
+ margin:5px;
+ font-weight:bold
+}
 button:hover{background:#08799f}
 .secondary{background:#405a76}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
@@ -71,14 +196,29 @@ label{display:block;color:#d6eaff}
 
 <!-- LOGIN PAGE -->
 <section id="loginPage" class="page active">
-<div class="card">
-<h2>🚀 Astronaut Login</h2>
-<p>Welcome to OrbitCare. Enter your astronaut name to continue.</p>
-<label>Astronaut Name</label>
-<input id="astronautName" placeholder="Enter your name">
-<button onclick="login()">Login →</button>
-<p id="loginError" style="color:#ff9999"></p>
-</div>
+ <div class="login-layout">
+  <div class="login-brand">
+   <h1>✦ Orbit<span>Care</span></h1>
+   <p class="login-tagline">Supporting Astronaut Well-being Beyond Earth</p>
+   <div class="login-divider"></div>
+   <div class="login-features">
+    <div class="login-feature"><span class="login-feature-icon">♡</span><span><strong>Monitor Health</strong><br><small>Track physical well-being</small></span></div>
+    <div class="login-feature"><span class="login-feature-icon">◎</span><span><strong>Track Mental Wellness</strong><br><small>Understand daily check-ins</small></span></div>
+    <div class="login-feature"><span class="login-feature-icon">▥</span><span><strong>Get Smart Insights</strong><br><small>Review analysis and reports</small></span></div>
+    <div class="login-feature"><span class="login-feature-icon">◇</span><span><strong>Stay Safe in Space</strong><br><small>Because every astronaut matters</small></span></div>
+   </div>
+  </div>
+
+  <div class="login-panel">
+   <h2>Welcome to OrbitCare!</h2>
+   <p class="login-subtitle">Enter your name to begin your journey</p>
+   <label for="astronautName">Astronaut Name</label>
+   <input id="astronautName" type="text" placeholder="Enter your name" autocomplete="name" onkeydown="if(event.key==='Enter')login()">
+   <button class="login-continue" onclick="login()">Continue&nbsp; →</button>
+   <p id="loginError" style="color:#ff9999;margin:14px 0 0" role="alert"></p>
+   <p class="login-note">Explore. Monitor. Thrive.</p>
+  </div>
+ </div>
 </section>
 
 <!-- ABOUT PAGE -->
@@ -191,10 +331,8 @@ label{display:block;color:#d6eaff}
 <h2>🔍 OrbitCare Analysis</h2>
 <p id="analysisHeading" class="small"></p>
 <div id="analysisSummary"></div>
-
 <h3>Analysis Results</h3>
 <div id="analysisDetails"></div>
-
 <div class="result">
 <h3>What would you like to do next?</h3>
 <p>Would you like OrbitCare to suggest some supportive ways to improve your wellbeing?</p>
@@ -205,18 +343,16 @@ label{display:block;color:#d6eaff}
 <button class="secondary" onclick="backToData()">← Back to Data Entry</button>
 </section>
 
-<!-- RECOVERY SUGGESTIONS PAGE -->
+<!-- RECOVERY PAGE -->
 <section id="recoveryPage" class="page">
 <div class="card">
 <h2>💡 Support & Recovery Suggestions</h2>
 <p class="small">These suggestions are based on the readings you entered. They are general wellbeing ideas, not medical treatment.</p>
 <div id="recoveryContent"></div>
-
 <div class="result">
 <h3>Remember</h3>
 <p>If readings or symptoms are concerning, seek guidance from a qualified medical professional or mission medical officer. Do not rely on these suggestions as treatment.</p>
 </div>
-
 <button onclick="goToReport()">Continue to Health Report →</button>
 </div>
 <button class="secondary" onclick="showPage('analysisPage')">← Back to Analysis</button>
@@ -297,22 +433,27 @@ function openMental(){
 }
 
 function backToData(){
- showPage(currentType==="physical"?"physicalPage":"mentalPage");
+ showPage(currentType==="mental"?"mentalPage":"physicalPage");
 }
 
 /* PHYSICAL DATA */
 
 function samplePhysical(){
- document.getElementById("heartRate").value=75;
+ document.getElementById("heartRate").value=72;
  document.getElementById("spo2").value=98;
- document.getElementById("temperature").value=37;
- document.getElementById("systolic").value=120;
- document.getElementById("diastolic").value=80;
+ document.getElementById("temperature").value=36.6;
+ document.getElementById("systolic").value=118;
+ document.getElementById("diastolic").value=76;
  document.getElementById("sleep").value=8;
  document.getElementById("fatigue").value="low";
  document.getElementById("physicalStress").value="low";
  document.getElementById("symptoms").value="none";
 }
+
+document.getElementById("physicalForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ analysePhysical();
+});
 
 function physicalData(){
  return {
@@ -328,53 +469,58 @@ function physicalData(){
  };
 }
 
-document.getElementById("physicalForm").addEventListener("submit",function(e){
- e.preventDefault();
- lastPhysical=physicalData();
+function analysePhysical(){
+ if(!currentName){alert("Please log in first.");return;}
+
+ const d=physicalData();
+ lastPhysical=d;
  currentType="physical";
  recoverySelected=false;
- analysePhysical(lastPhysical);
-});
-
-function analysePhysical(d){
  currentFlags=[];
  currentSuggestions=[];
 
- const ranges=[
-  ["Heart Rate",d.heartRate+" BPM","60–100 BPM",d.heartRate>=60&&d.heartRate<=100],
-  ["SpO₂",d.spo2+"%","95–100%",d.spo2>=95],
-  ["Temperature",d.temperature+" °C","36.1–37.2 °C",d.temperature>=36.1&&d.temperature<=37.2],
-  ["Systolic BP",d.systolic+" mmHg","90–120 mmHg",d.systolic>=90&&d.systolic<=120],
-  ["Diastolic BP",d.diastolic+" mmHg","60–80 mmHg",d.diastolic>=60&&d.diastolic<=80],
-  ["Sleep",d.sleep+" hours","Individual needs vary",d.sleep>=7&&d.sleep<=9]
+ const checks=[
+  ["Heart Rate",d.heartRate,60,100,"BPM"],
+  ["SpO₂",d.spo2,95,100,"%"],
+  ["Temperature",d.temperature,36.1,37.2,"°C"],
+  ["Systolic BP",d.systolic,90,120,"mmHg"],
+  ["Diastolic BP",d.diastolic,60,80,"mmHg"],
+  ["Sleep",d.sleep,7,9,"hours"]
  ];
 
- ranges.forEach(r=>{
-  if(!r[3])currentFlags.push(r[0]+" is outside this general reference range.");
+ checks.forEach(([name,value,min,max,unit])=>{
+  if(value<min||value>max){
+   currentFlags.push(`${name}: ${value} ${unit} is outside the displayed general reference range (${min}–${max} ${unit}).`);
+   currentSuggestions.push(`Review your ${name.toLowerCase()} reading and consider discussing it with a qualified medical professional.`);
+  }
  });
 
- if(d.fatigue==="high")currentFlags.push("High fatigue was reported.");
- if(d.stress==="high")currentFlags.push("High stress was reported.");
- if(d.symptoms!=="none")currentFlags.push("Reported symptom: "+d.symptoms+".");
+ if(d.fatigue==="high"){
+  currentFlags.push("A high fatigue level was reported.");
+  currentSuggestions.push("Consider a suitable rest period and report persistent fatigue to the mission medical officer.");
+ }
+ if(d.stress==="high"){
+  currentFlags.push("A high stress level was reported.");
+  currentSuggestions.push("Consider a relaxation break and speak with a trusted crew member.");
+ }
+ if(d.symptoms!=="none"){
+  currentFlags.push("A symptom was reported: "+d.symptoms+".");
+  currentSuggestions.push("Share reported symptoms with the mission medical officer.");
+ }
 
- if(d.sleep<7)currentSuggestions.push("Consider discussing your sleep routine and rest opportunities with the mission medical team.");
- if(d.fatigue==="high")currentSuggestions.push("Consider a suitable rest period and discuss persistent fatigue with the medical team.");
- if(d.stress==="high")currentSuggestions.push("Consider a quiet break, a relaxation activity or a conversation with a trusted crew member.");
- if(d.symptoms!=="none")currentSuggestions.push("Please report symptoms to a qualified medical professional or mission medical officer.");
- if(!currentSuggestions.length)currentSuggestions.push("Continue following your established rest, hydration and wellbeing routines.");
+ if(!currentFlags.length){
+  currentSuggestions.push("Continue regular monitoring and healthy routines.");
+ }
 
  document.getElementById("analysisHeading").textContent="Physical Health Analysis for "+currentName;
 
  document.getElementById("analysisSummary").innerHTML=
- `<div class="result">Your physical readings have been analysed.</div>`;
+ `<div class="result">Readings recorded for ${safe(currentName)}.</div>`;
 
  document.getElementById("analysisDetails").innerHTML=
- `<table><tr><th>Measurement</th><th>Your Reading</th><th>General Reference</th><th>Review</th></tr>`+
- ranges.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]?"Within range":"Review"}</td></tr>`).join("")+
- `</table>`+
- (currentFlags.length?
+ currentFlags.length?
  currentFlags.map(f=>`<div class="result warning">${safe(f)}</div>`).join("") :
- `<div class="result good">No values outside the displayed general reference ranges were identified.</div>`);
+ `<div class="result good">No values outside the displayed general reference ranges were identified.</div>`;
 
  showPage("analysisPage");
 }
